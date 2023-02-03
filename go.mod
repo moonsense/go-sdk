@@ -1,4 +1,4 @@
-module moonsense.io
+module github.com/moonsense/go-sdk
 
 require (
     google.golang.org/protobuf v1.28.1

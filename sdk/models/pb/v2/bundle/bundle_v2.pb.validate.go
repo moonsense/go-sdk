@@ -18,7 +18,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/anypb"
 
-	v2 "moonsense.io/sdk/models/pb/v2/common"
+	v2 "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
 )
 
 // ensure the imports are used
