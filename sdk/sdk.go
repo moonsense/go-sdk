@@ -1,10 +1,12 @@
 package sdk
 
 import (
-	"fmt"
 	"os"
 
+	api "github.com/moonsense/go-sdk/sdk/api"
+	cfg "github.com/moonsense/go-sdk/sdk/config"
 	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
+	controlPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/control-plane"
 )
 
 const (
@@ -13,30 +15,22 @@ const (
 	defaultDataPlaneRegion = "us-central1.gcp"
 )
 
-type Config struct {
-	// API secret token generated from the Moonsense Cloud web console
-	SecretToken string
-	// Root API domain (defaults to moonsense.cloud)
-	RootDomain string
-	// Protocol to use when connecting to the API (defaults to https)
-	Protocol string
-	// Moonsense Cloud Data Plane region to connect to
-	DataPlaneRegion string
-}
-
 // This is internal cuz we want to force you through the... Constructor, NewClient
 type clientImpl struct {
-	Config Config
+	Config             cfg.Config
+	controlPlaneClient *api.ControlPlaneClient
+	dataPlaneClient    *api.DataPlaneClient
 }
 
 // The interface that we define what all this client is going to do, similar to
 // the Python SDK
 type Client interface {
-	WhoAmI() *commonProto.TokenSelfResponse
+	ListRegions() (*controlPlaneProto.DataRegionsListResponse, *api.ApiErrorResponse)
+	WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse)
 }
 
 // My not so real Constructor
-func NewClient(c Config) Client {
+func NewClient(c cfg.Config) Client {
 	if c.SecretToken == "" {
 		// Check the environment to see if it is set?
 		secretToken := os.Getenv("MOONSENSE_SECRET_TOKEN")
@@ -57,13 +51,16 @@ func NewClient(c Config) Client {
 	}
 
 	return &clientImpl{
-		Config: c,
+		Config:             c,
+		controlPlaneClient: api.NewControlPlaneClient(c),
+		dataPlaneClient:    api.NewDataPlaneClient(c),
 	}
 }
 
-func (client *clientImpl) WhoAmI() *commonProto.TokenSelfResponse {
-	// Do some stuff later.
-	fmt.Printf("I have a config %s\n", client.Config.SecretToken)
+func (client *clientImpl) ListRegions() (*controlPlaneProto.DataRegionsListResponse, *api.ApiErrorResponse) {
+	return client.controlPlaneClient.ListRegions()
+}
 
-	return nil
+func (client *clientImpl) WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse) {
+	return client.dataPlaneClient.WhoAmI()
 }
