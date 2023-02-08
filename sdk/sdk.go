@@ -7,6 +7,7 @@ import (
 	cfg "github.com/moonsense/go-sdk/sdk/config"
 	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
 	controlPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/control-plane"
+	dataPlaneSDKProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane-sdk"
 )
 
 const (
@@ -15,24 +16,20 @@ const (
 	defaultDataPlaneRegion = "us-central1.gcp"
 )
 
-// This is internal cuz we want to force you through the... Constructor, NewClient
 type clientImpl struct {
 	Config             cfg.Config
 	controlPlaneClient *api.ControlPlaneClient
 	dataPlaneClient    *api.DataPlaneClient
 }
 
-// The interface that we define what all this client is going to do, similar to
-// the Python SDK
 type Client interface {
 	ListRegions() (*controlPlaneProto.DataRegionsListResponse, *api.ApiErrorResponse)
 	WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse)
+	DescribeSession(sessionId string, minimal bool) (*dataPlaneSDKProto.Session, *api.ApiErrorResponse)
 }
 
-// My not so real Constructor
 func NewClient(c cfg.Config) Client {
 	if c.SecretToken == "" {
-		// Check the environment to see if it is set?
 		secretToken := os.Getenv("MOONSENSE_SECRET_TOKEN")
 		if secretToken != "" {
 			c.SecretToken = secretToken
@@ -63,4 +60,8 @@ func (client *clientImpl) ListRegions() (*controlPlaneProto.DataRegionsListRespo
 
 func (client *clientImpl) WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse) {
 	return client.dataPlaneClient.WhoAmI()
+}
+
+func (client *clientImpl) DescribeSession(sessionId string, minimal bool) (*dataPlaneSDKProto.Session, *api.ApiErrorResponse) {
+	return client.dataPlaneClient.DescribeSession(sessionId, minimal)
 }
