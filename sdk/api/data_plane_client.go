@@ -62,3 +62,26 @@ func (client *DataPlaneClient) DescribeSession(sessionId string, minimal bool) (
 
 	return &response, nil
 }
+
+func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []string) (*commonProto.Empty, *ApiErrorResponse) {
+	var response commonProto.Empty
+
+	var sessionLabels []*dataPlaneSDKProto.SessionLabel
+	for _, label := range labels {
+		sessionLabels = append(sessionLabels, &dataPlaneSDKProto.SessionLabel{Name: label})
+	}
+
+	request := dataPlaneSDKProto.SessionLabelCreateRequest{
+		Labels: sessionLabels,
+	}
+
+	err := client.apiClient.ProcessRequest(
+		"POST",
+		NewDynamicPath("/v2/sessions/:sessionId/labels", map[string]string{"sessionId": sessionId}),
+		&request, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}

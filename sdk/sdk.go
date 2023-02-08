@@ -26,6 +26,7 @@ type Client interface {
 	ListRegions() (*controlPlaneProto.DataRegionsListResponse, *api.ApiErrorResponse)
 	WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse)
 	DescribeSession(sessionId string, minimal bool) (*dataPlaneSDKProto.Session, *api.ApiErrorResponse)
+	UpdateSessionLabels(sessionId string, labels []string) (*commonProto.Empty, *api.ApiErrorResponse)
 }
 
 func NewClient(c cfg.Config) Client {
@@ -64,4 +65,8 @@ func (client *clientImpl) WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErro
 
 func (client *clientImpl) DescribeSession(sessionId string, minimal bool) (*dataPlaneSDKProto.Session, *api.ApiErrorResponse) {
 	return client.dataPlaneClient.DescribeSession(sessionId, minimal)
+}
+
+func (client *clientImpl) UpdateSessionLabels(sessionId string, labels []string) (*commonProto.Empty, *api.ApiErrorResponse) {
+	return client.dataPlaneClient.UpdateSessionLabels(sessionId, labels)
 }
