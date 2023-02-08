@@ -14,7 +14,7 @@ type DataPlaneClient struct {
 }
 
 func NewDataPlaneClient(c cfg.Config) *DataPlaneClient {
-	baseUrl := c.Protocol + "://" + c.DataPlaneRegion + ".data-api." + c.RootDomain
+	baseUrl := c.Protocol + "://" + c.DefaultRegion + ".data-api." + c.RootDomain
 
 	api := ApiClient{
 		BaseUrl:              baseUrl,
@@ -30,10 +30,9 @@ func NewDataPlaneClient(c cfg.Config) *DataPlaneClient {
 func (client *DataPlaneClient) WhoAmI() (*commonProto.TokenSelfResponse, *ApiErrorResponse) {
 	var response commonProto.TokenSelfResponse
 
-	err := client.apiClient.ProcessRequest(
-		"GET",
+	err := client.apiClient.Get(
 		NewStaticPath("/v2/tokens/self"),
-		nil, &response)
+		&response)
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +51,9 @@ func (client *DataPlaneClient) DescribeSession(sessionId string, minimal bool) (
 	params := url.Values{}
 	params.Add("view", view)
 
-	err := client.apiClient.ProcessRequest(
-		"GET",
+	err := client.apiClient.Get(
 		NewDynamicPathWithQueryParams("/v2/sessions/:sessionId", map[string]string{"sessionId": sessionId}, params),
-		nil, &response)
+		&response)
 	if err != nil {
 		return nil, err
 	}
@@ -75,10 +73,10 @@ func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []st
 		Labels: sessionLabels,
 	}
 
-	err := client.apiClient.ProcessRequest(
-		"POST",
+	err := client.apiClient.Post(
 		NewDynamicPath("/v2/sessions/:sessionId/labels", map[string]string{"sessionId": sessionId}),
-		&request, &response)
+		&request,
+		&response)
 	if err != nil {
 		return nil, err
 	}

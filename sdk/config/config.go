@@ -7,6 +7,6 @@ type Config struct {
 	RootDomain string
 	// Protocol to use when connecting to the API (defaults to https)
 	Protocol string
-	// Moonsense Cloud Data Plane region to connect to
-	DataPlaneRegion string
+	// Default Moonsense Cloud Data Plane region to connect to
+	DefaultRegion string
 }

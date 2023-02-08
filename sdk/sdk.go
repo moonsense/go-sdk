@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	defaultRootDomain      = "moonsense.cloud"
-	defaultProtocol        = "https"
-	defaultDataPlaneRegion = "us-central1.gcp"
+	defaultRootDomain = "moonsense.cloud"
+	defaultProtocol   = "https"
+	defaultRegion     = "us-central1.gcp"
 )
 
 type clientImpl struct {
@@ -44,8 +44,8 @@ func NewClient(c cfg.Config) Client {
 	if c.Protocol == "" {
 		c.Protocol = defaultProtocol
 	}
-	if c.DataPlaneRegion == "" {
-		c.DataPlaneRegion = defaultDataPlaneRegion
+	if c.DefaultRegion == "" {
+		c.DefaultRegion = defaultRegion
 	}
 
 	return &clientImpl{

@@ -28,10 +28,9 @@ func NewControlPlaneClient(c cfg.Config) *ControlPlaneClient {
 func (client *ControlPlaneClient) ListRegions() (*controlPlaneProto.DataRegionsListResponse, *ApiErrorResponse) {
 	var response controlPlaneProto.DataRegionsListResponse
 
-	err := client.apiClient.ProcessRequest(
-		"GET",
+	err := client.apiClient.Get(
 		NewStaticPath("/v2/regions"),
-		nil, &response)
+		&response)
 	if err != nil {
 		return nil, err
 	}
