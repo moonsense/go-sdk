@@ -25,7 +25,7 @@ func NewControlPlaneClient(c cfg.Config) *ControlPlaneClient {
 	}
 }
 
-func (client *ControlPlaneClient) ListRegions() (*controlPlaneProto.DataRegionsListResponse, *ApiErrorResponse) {
+func (client *ControlPlaneClient) ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *ApiErrorResponse) {
 	var response controlPlaneProto.DataRegionsListResponse
 
 	err := client.apiClient.Get(
@@ -35,5 +35,5 @@ func (client *ControlPlaneClient) ListRegions() (*controlPlaneProto.DataRegionsL
 		return nil, err
 	}
 
-	return &response, nil
+	return response.Regions, nil
 }

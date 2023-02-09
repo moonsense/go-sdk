@@ -2,11 +2,13 @@ package sdk
 
 import (
 	"os"
+	"time"
 
 	api "github.com/moonsense/go-sdk/sdk/api"
 	cfg "github.com/moonsense/go-sdk/sdk/config"
 	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
 	controlPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/control-plane"
+	dataPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane"
 	dataPlaneSDKProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane-sdk"
 )
 
@@ -23,10 +25,48 @@ type clientImpl struct {
 }
 
 type Client interface {
-	ListRegions() (*controlPlaneProto.DataRegionsListResponse, *api.ApiErrorResponse)
-	WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse)
+	// ListRegions retrieves the list of Data Plane regions in the Moonsense Cloud.
+	//
+	// These regions are used for data ingest and storage. Data is encrypted while at-rest
+	// and in-transit. Granular data never leaves a region.
+	//
+	// See: https://api.moonsense.cloud/v2/regions
+	ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *api.ApiErrorResponse)
+
+	// ListSessions lists the sessions for the current project
+	//
+	// labels: Optional - A list of labels to match.
+	// journeyId: Optional - The journey id to match.
+	// platforms: Optional - The list of 'Platform's to match. If 'None' is supplied all 'Platform's will be returned.
+	// since: Optional - The start time to match.
+	// until: Optional - The end time to match.
+	ListSessions(labels []*string,
+		journeyId *string,
+		platforms []*commonProto.DevicePlatform,
+		since *time.Time,
+		until *time.Time)
+
+	// DescribeSession returns the details of a session with the specified sessionId. If minimal is set to true
+	// only total values are returned for counters.
 	DescribeSession(sessionId string, minimal bool) (*dataPlaneSDKProto.Session, *api.ApiErrorResponse)
-	UpdateSessionLabels(sessionId string, labels []string) (*commonProto.Empty, *api.ApiErrorResponse)
+
+	// ListSessionFeatures returns the features for the specified sessionId. If region is not provided, the
+	// appropriate region will be looked up by calling DescribeSession first.
+	ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *api.ApiErrorResponse)
+
+	// ListSessionSignals returns the signals for the specified sessionId. If region is not provided, the
+	// appropriate region will be looked up by calling DescribeSession first.
+	ListSessionSignals(sessionId string, region *string) (*dataPlaneProto.SignalsResponse, *api.ApiErrorResponse)
+
+	// UpdateSessionLabels replaces the existing session labels with the provided labels for the specified sessionId.
+	UpdateSessionLabels(sessionId string, labels []string) *api.ApiErrorResponse
+
+	// DownloadSession downloads and consolidates all data ingested so far for the session with the specified sessionId
+	// into a single file with one bundle JSON per line.
+	DownloadSession(sessionId string, outputFile string) *api.ApiErrorResponse
+
+	// WhoAmI describes the authentication token used to connect to the API
+	WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse)
 }
 
 func NewClient(c cfg.Config) Client {
@@ -55,18 +95,39 @@ func NewClient(c cfg.Config) Client {
 	}
 }
 
-func (client *clientImpl) ListRegions() (*controlPlaneProto.DataRegionsListResponse, *api.ApiErrorResponse) {
+func (client *clientImpl) ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *api.ApiErrorResponse) {
 	return client.controlPlaneClient.ListRegions()
 }
 
-func (client *clientImpl) WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse) {
-	return client.dataPlaneClient.WhoAmI()
+func (client *clientImpl) ListSessions(labels []*string,
+	journeyId *string,
+	platforms []*commonProto.DevicePlatform,
+	since *time.Time,
+	until *time.Time) {
+
 }
 
 func (client *clientImpl) DescribeSession(sessionId string, minimal bool) (*dataPlaneSDKProto.Session, *api.ApiErrorResponse) {
 	return client.dataPlaneClient.DescribeSession(sessionId, minimal)
 }
 
-func (client *clientImpl) UpdateSessionLabels(sessionId string, labels []string) (*commonProto.Empty, *api.ApiErrorResponse) {
+func (client *clientImpl) ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *api.ApiErrorResponse) {
+	return nil, nil
+}
+
+func (client *clientImpl) ListSessionSignals(sessionId string, region *string) (*dataPlaneProto.SignalsResponse, *api.ApiErrorResponse) {
+	return nil, nil
+}
+
+func (client *clientImpl) UpdateSessionLabels(sessionId string, labels []string) *api.ApiErrorResponse {
 	return client.dataPlaneClient.UpdateSessionLabels(sessionId, labels)
+}
+
+func (client *clientImpl) DownloadSession(sessionId string, outputFile string) *api.ApiErrorResponse {
+	return client.dataPlaneClient.DownloadSession(sessionId)
+}
+
+func (client *clientImpl) WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse) {
+	time.Now()
+	return client.dataPlaneClient.WhoAmI()
 }

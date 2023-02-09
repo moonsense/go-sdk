@@ -1,8 +1,10 @@
 package sdk
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
 	cfg "github.com/moonsense/go-sdk/sdk/config"
 	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
@@ -61,7 +63,7 @@ func (client *DataPlaneClient) DescribeSession(sessionId string, minimal bool) (
 	return &response, nil
 }
 
-func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []string) (*commonProto.Empty, *ApiErrorResponse) {
+func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []string) *ApiErrorResponse {
 	var response commonProto.Empty
 
 	var sessionLabels []*dataPlaneSDKProto.SessionLabel
@@ -77,9 +79,28 @@ func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []st
 		NewDynamicPath("/v2/sessions/:sessionId/labels", map[string]string{"sessionId": sessionId}),
 		&request,
 		&response)
+
+	return err
+}
+
+func (client *DataPlaneClient) DownloadSession(sessionId string) *ApiErrorResponse {
+	err := client.apiClient.Get(
+		NewDynamicPath("/v2/sessions/:sessionId/bundles", map[string]string{"sessionId": sessionId}),
+		nil)
+
 	if err != nil {
-		return nil, err
+		fmt.Println("Badness happened!")
+		fmt.Println(err)
+		return err
 	}
 
-	return &response, nil
+	return nil
+}
+
+func (client *DataPlaneClient) ListSessions(labels *[]string,
+	journeyId *string,
+	platforms *[]commonProto.DevicePlatform,
+	since *time.Time,
+	until *time.Time) {
+
 }
