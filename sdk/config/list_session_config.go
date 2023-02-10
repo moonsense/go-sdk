@@ -7,6 +7,12 @@ import (
 )
 
 type ListSessionConfig struct {
+	// The Page of Sessions to return
+	Page int
+
+	// The number of Sessions to return per page
+	SessionsPerPage int
+
 	// A list of Labels to match
 	Labels []string
 
@@ -21,7 +27,4 @@ type ListSessionConfig struct {
 
 	// The end time to match
 	Until time.Time
-
-	// The number of Sessions to return per page
-	SessionsPerPage int
 }
