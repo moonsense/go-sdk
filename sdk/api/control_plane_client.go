@@ -11,7 +11,7 @@ type ControlPlaneClient struct {
 	apiClient *ApiClient
 }
 
-func NewControlPlaneClient(c cfg.Config) *ControlPlaneClient {
+func NewControlPlaneClient(c cfg.SDKConfig) *ControlPlaneClient {
 	baseUrl := c.Protocol + "://api." + c.RootDomain
 
 	api := ApiClient{

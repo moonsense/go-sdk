@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	cfg "github.com/moonsense/go-sdk/sdk/config"
@@ -14,10 +15,10 @@ import (
 
 type DataPlaneClient struct {
 	apiClient *ApiClient
-	config    cfg.Config
+	config    cfg.SDKConfig
 }
 
-func NewDataPlaneClient(c cfg.Config) *DataPlaneClient {
+func NewDataPlaneClient(c cfg.SDKConfig) *DataPlaneClient {
 	baseUrl := c.Protocol + "://" + c.DefaultRegion + ".data-api." + c.RootDomain
 
 	api := ApiClient{
@@ -57,12 +58,40 @@ func (client *DataPlaneClient) resetBaseUrl() {
 
 // Public methods
 
-func (client *DataPlaneClient) WhoAmI() (*commonProto.TokenSelfResponse, *ApiErrorResponse) {
-	var response commonProto.TokenSelfResponse
+func (client *DataPlaneClient) ListSessions(listSessionConfig cfg.ListSessionConfig) (*dataPlaneProto.SessionListResponse, *ApiErrorResponse) {
+	params := url.Values{}
 
+	var sessionsPerPage = 50
+	if listSessionConfig.SessionsPerPage != 0 {
+		sessionsPerPage = listSessionConfig.SessionsPerPage
+	}
+	params.Add("per_page", strconv.Itoa(sessionsPerPage))
+
+	if listSessionConfig.JourneyId != "" {
+		params.Add("filter[journey_id]", listSessionConfig.JourneyId)
+	}
+
+	if !listSessionConfig.Since.IsZero() {
+		params.Add("filter[min_created_at]", listSessionConfig.Since.Format(time.RFC3339))
+	}
+
+	if !listSessionConfig.Until.IsZero() {
+		params.Add("filter[max_created_at]", listSessionConfig.Until.Format(time.RFC3339))
+	}
+
+	for _, label := range listSessionConfig.Labels {
+		params.Add("filter[labels][]", label)
+	}
+
+	for _, platform := range listSessionConfig.Platforms {
+		params.Add("filter[platforms][]", platform.String())
+	}
+
+	var response dataPlaneProto.SessionListResponse
 	err := client.apiClient.Get(
-		NewStaticPath("/v2/tokens/self"),
+		NewDynamicPathWithQueryParams("/v2/sessions", map[string]string{}, params),
 		&response)
+
 	if err != nil {
 		return nil, err
 	}
@@ -89,48 +118,6 @@ func (client *DataPlaneClient) DescribeSession(sessionId string, minimal bool) (
 	}
 
 	return &response, nil
-}
-
-func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []string) *ApiErrorResponse {
-	var response commonProto.Empty
-
-	var sessionLabels []*dataPlaneSDKProto.SessionLabel
-	for _, label := range labels {
-		sessionLabels = append(sessionLabels, &dataPlaneSDKProto.SessionLabel{Name: label})
-	}
-
-	request := dataPlaneSDKProto.SessionLabelCreateRequest{
-		Labels: sessionLabels,
-	}
-
-	err := client.apiClient.Post(
-		NewDynamicPath("/v2/sessions/:sessionId/labels", map[string]string{"sessionId": sessionId}),
-		&request,
-		&response)
-
-	return err
-}
-
-func (client *DataPlaneClient) DownloadSession(sessionId string) *ApiErrorResponse {
-	err := client.apiClient.Get(
-		NewDynamicPath("/v2/sessions/:sessionId/bundles", map[string]string{"sessionId": sessionId}),
-		nil)
-
-	if err != nil {
-		fmt.Println("Badness happened!")
-		fmt.Println(err)
-		return err
-	}
-
-	return nil
-}
-
-func (client *DataPlaneClient) ListSessions(labels *[]string,
-	journeyId *string,
-	platforms *[]commonProto.DevicePlatform,
-	since *time.Time,
-	until *time.Time) {
-
 }
 
 func (client *DataPlaneClient) ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *ApiErrorResponse) {
@@ -183,6 +170,53 @@ func (client *DataPlaneClient) ListSessionSignals(sessionId string, region *stri
 	var response dataPlaneProto.SignalsResponse
 	err := client.apiClient.Get(
 		NewDynamicPath("/v2/sessions/:sessionId/signals", map[string]string{"sessionId": sessionId}),
+		&response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func (client *DataPlaneClient) DownloadSession(sessionId string) *ApiErrorResponse {
+	err := client.apiClient.Get(
+		NewDynamicPath("/v2/sessions/:sessionId/bundles", map[string]string{"sessionId": sessionId}),
+		nil)
+
+	if err != nil {
+		fmt.Println("Badness happened!")
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []string) *ApiErrorResponse {
+	var response commonProto.Empty
+
+	var sessionLabels []*dataPlaneSDKProto.SessionLabel
+	for _, label := range labels {
+		sessionLabels = append(sessionLabels, &dataPlaneSDKProto.SessionLabel{Name: label})
+	}
+
+	request := dataPlaneSDKProto.SessionLabelCreateRequest{
+		Labels: sessionLabels,
+	}
+
+	err := client.apiClient.Post(
+		NewDynamicPath("/v2/sessions/:sessionId/labels", map[string]string{"sessionId": sessionId}),
+		&request,
+		&response)
+
+	return err
+}
+
+func (client *DataPlaneClient) WhoAmI() (*commonProto.TokenSelfResponse, *ApiErrorResponse) {
+	var response commonProto.TokenSelfResponse
+
+	err := client.apiClient.Get(
+		NewStaticPath("/v2/tokens/self"),
 		&response)
 	if err != nil {
 		return nil, err

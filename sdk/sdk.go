@@ -6,6 +6,7 @@ import (
 
 	api "github.com/moonsense/go-sdk/sdk/api"
 	cfg "github.com/moonsense/go-sdk/sdk/config"
+	models "github.com/moonsense/go-sdk/sdk/models"
 	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
 	controlPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/control-plane"
 	dataPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane"
@@ -19,7 +20,7 @@ const (
 )
 
 type clientImpl struct {
-	Config             cfg.Config
+	Config             cfg.SDKConfig
 	controlPlaneClient *api.ControlPlaneClient
 	dataPlaneClient    *api.DataPlaneClient
 }
@@ -34,17 +35,7 @@ type Client interface {
 	ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *api.ApiErrorResponse)
 
 	// ListSessions lists the sessions for the current project
-	//
-	// labels: Optional - A list of labels to match.
-	// journeyId: Optional - The journey id to match.
-	// platforms: Optional - The list of 'Platform's to match. If 'None' is supplied all 'Platform's will be returned.
-	// since: Optional - The start time to match.
-	// until: Optional - The end time to match.
-	ListSessions(labels []*string,
-		journeyId *string,
-		platforms []*commonProto.DevicePlatform,
-		since *time.Time,
-		until *time.Time)
+	ListSessions(listSessionConfig cfg.ListSessionConfig) (*models.PaginatedSession, *api.ApiErrorResponse)
 
 	// DescribeSession returns the details of a session with the specified sessionId. If minimal is set to true
 	// only total values are returned for counters.
@@ -58,18 +49,18 @@ type Client interface {
 	// appropriate region will be looked up by calling DescribeSession first.
 	ListSessionSignals(sessionId string, region *string) (*dataPlaneProto.SignalsResponse, *api.ApiErrorResponse)
 
-	// UpdateSessionLabels replaces the existing session labels with the provided labels for the specified sessionId.
-	UpdateSessionLabels(sessionId string, labels []string) *api.ApiErrorResponse
-
 	// DownloadSession downloads and consolidates all data ingested so far for the session with the specified sessionId
 	// into a single file with one bundle JSON per line.
 	DownloadSession(sessionId string, outputFile string) *api.ApiErrorResponse
+
+	// UpdateSessionLabels replaces the existing session labels with the provided labels for the specified sessionId.
+	UpdateSessionLabels(sessionId string, labels []string) *api.ApiErrorResponse
 
 	// WhoAmI describes the authentication token used to connect to the API
 	WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse)
 }
 
-func NewClient(c cfg.Config) Client {
+func NewClient(c cfg.SDKConfig) Client {
 	if c.SecretToken == "" {
 		secretToken := os.Getenv("MOONSENSE_SECRET_TOKEN")
 		if secretToken != "" {
@@ -99,12 +90,15 @@ func (client *clientImpl) ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *
 	return client.controlPlaneClient.ListRegions()
 }
 
-func (client *clientImpl) ListSessions(labels []*string,
-	journeyId *string,
-	platforms []*commonProto.DevicePlatform,
-	since *time.Time,
-	until *time.Time) {
+func (client *clientImpl) ListSessions(listSessionConfig cfg.ListSessionConfig) (*models.PaginatedSession, *api.ApiErrorResponse) {
+	sessionList, err := client.dataPlaneClient.ListSessions(listSessionConfig)
+	if err != nil {
+		return nil, err
+	}
 
+	paginatedSession := models.NewPaginatedSession(sessionList)
+
+	return &paginatedSession, nil
 }
 
 func (client *clientImpl) DescribeSession(sessionId string, minimal bool) (*dataPlaneSDKProto.Session, *api.ApiErrorResponse) {

@@ -1,6 +1,6 @@
 package sdk
 
-type Config struct {
+type SDKConfig struct {
 	// API secret token generated from the Moonsense Cloud web console
 	SecretToken string
 	// Root API domain (defaults to moonsense.cloud)
