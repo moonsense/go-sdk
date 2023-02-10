@@ -112,11 +112,11 @@ func (client *clientImpl) DescribeSession(sessionId string, minimal bool) (*data
 }
 
 func (client *clientImpl) ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *api.ApiErrorResponse) {
-	return nil, nil
+	return client.dataPlaneClient.ListSessionFeatures(sessionId, region)
 }
 
 func (client *clientImpl) ListSessionSignals(sessionId string, region *string) (*dataPlaneProto.SignalsResponse, *api.ApiErrorResponse) {
-	return nil, nil
+	return client.dataPlaneClient.ListSessionSignals(sessionId, region)
 }
 
 func (client *clientImpl) UpdateSessionLabels(sessionId string, labels []string) *api.ApiErrorResponse {

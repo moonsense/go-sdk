@@ -8,11 +8,13 @@ import (
 
 	cfg "github.com/moonsense/go-sdk/sdk/config"
 	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
+	dataPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane"
 	dataPlaneSDKProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane-sdk"
 )
 
 type DataPlaneClient struct {
 	apiClient *ApiClient
+	config    cfg.Config
 }
 
 func NewDataPlaneClient(c cfg.Config) *DataPlaneClient {
@@ -26,8 +28,34 @@ func NewDataPlaneClient(c cfg.Config) *DataPlaneClient {
 
 	return &DataPlaneClient{
 		apiClient: &api,
+		config:    c,
 	}
 }
+
+// Private helper methods
+
+func (client *DataPlaneClient) baseUrl(region string) string {
+	if region == "" {
+		return client.config.Protocol + "://" + client.config.DefaultRegion + ".data-api." + client.config.RootDomain
+	}
+
+	return client.config.Protocol + "://" + region + ".data-api." + client.config.RootDomain
+}
+
+func (client *DataPlaneClient) findRegionId(sessionId string) (*string, *ApiErrorResponse) {
+	session, err := client.DescribeSession(sessionId, true)
+	if err != nil {
+		return nil, err
+	}
+
+	return &session.RegionId, nil
+}
+
+func (client *DataPlaneClient) resetBaseUrl() {
+	client.apiClient.BaseUrl = client.baseUrl("")
+}
+
+// Public methods
 
 func (client *DataPlaneClient) WhoAmI() (*commonProto.TokenSelfResponse, *ApiErrorResponse) {
 	var response commonProto.TokenSelfResponse
@@ -103,4 +131,62 @@ func (client *DataPlaneClient) ListSessions(labels *[]string,
 	since *time.Time,
 	until *time.Time) {
 
+}
+
+func (client *DataPlaneClient) ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *ApiErrorResponse) {
+	// If region is nil, we need to first lookup the session to get the region to use
+	var regionId *string
+
+	if region != nil {
+		regionId = region
+	} else {
+		resolvedId, err := client.findRegionId(sessionId)
+		if err != nil {
+			return nil, err
+		}
+		regionId = resolvedId
+	}
+
+	// Modify the base url for this call
+	defer client.resetBaseUrl()
+	client.apiClient.BaseUrl = client.baseUrl(*regionId)
+
+	var response *dataPlaneProto.FeatureListResponse
+	err := client.apiClient.Get(
+		NewDynamicPath("/v2/sessions/:sessionId/features", map[string]string{"sessionId": sessionId}),
+		&response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (client *DataPlaneClient) ListSessionSignals(sessionId string, region *string) (*dataPlaneProto.SignalsResponse, *ApiErrorResponse) {
+	// If region is nil, we need to first lookup the session to get the region to use
+	var regionId *string
+
+	if region != nil {
+		regionId = region
+	} else {
+		resolvedId, err := client.findRegionId(sessionId)
+		if err != nil {
+			return nil, err
+		}
+		regionId = resolvedId
+	}
+
+	// Modify the base url for this call
+	defer client.resetBaseUrl()
+	client.apiClient.BaseUrl = client.baseUrl(*regionId)
+
+	var response *dataPlaneProto.SignalsResponse
+	err := client.apiClient.Get(
+		NewDynamicPath("/v2/sessions/:sessionId/signals", map[string]string{"sessionId": sessionId}),
+		&response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
