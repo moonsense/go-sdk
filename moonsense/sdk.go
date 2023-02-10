@@ -3,9 +3,9 @@ package moonsense
 import (
 	"os"
 
-	api "github.com/moonsense/go-sdk/moonsense/api"
-	cfg "github.com/moonsense/go-sdk/moonsense/config"
-	models "github.com/moonsense/go-sdk/moonsense/models"
+	"github.com/moonsense/go-sdk/moonsense/api"
+	"github.com/moonsense/go-sdk/moonsense/config"
+	"github.com/moonsense/go-sdk/moonsense/models"
 	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 	controlPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/control-plane"
 	dataPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane"
@@ -19,7 +19,7 @@ const (
 )
 
 type clientImpl struct {
-	Config             cfg.SDKConfig
+	Config             config.SDKConfig
 	controlPlaneClient *api.ControlPlaneClient
 	dataPlaneClient    *api.DataPlaneClient
 }
@@ -34,7 +34,7 @@ type Client interface {
 	ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *api.ApiErrorResponse)
 
 	// ListSessions lists the sessions for the current project
-	ListSessions(listSessionConfig cfg.ListSessionConfig) (*models.PaginatedSession, *api.ApiErrorResponse)
+	ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSession, *api.ApiErrorResponse)
 
 	// DescribeSession returns the details of a session with the specified sessionId. If minimal is set to true
 	// only total values are returned for counters.
@@ -59,7 +59,7 @@ type Client interface {
 	WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse)
 }
 
-func NewClient(c cfg.SDKConfig) Client {
+func NewClient(c config.SDKConfig) Client {
 	if c.SecretToken == "" {
 		secretToken := os.Getenv("MOONSENSE_SECRET_TOKEN")
 		if secretToken != "" {
@@ -89,7 +89,7 @@ func (client *clientImpl) ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *
 	return client.controlPlaneClient.ListRegions()
 }
 
-func (client *clientImpl) ListSessions(listSessionConfig cfg.ListSessionConfig) (*models.PaginatedSession, *api.ApiErrorResponse) {
+func (client *clientImpl) ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSession, *api.ApiErrorResponse) {
 	sessionList, err := client.dataPlaneClient.ListSessions(listSessionConfig)
 	if err != nil {
 		return nil, err
