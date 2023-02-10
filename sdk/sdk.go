@@ -2,7 +2,6 @@ package sdk
 
 import (
 	"os"
-	"time"
 
 	api "github.com/moonsense/go-sdk/sdk/api"
 	cfg "github.com/moonsense/go-sdk/sdk/config"
@@ -49,9 +48,9 @@ type Client interface {
 	// appropriate region will be looked up by calling DescribeSession first.
 	ListSessionSignals(sessionId string, region *string) (*dataPlaneProto.SignalsResponse, *api.ApiErrorResponse)
 
-	// DownloadSession downloads and consolidates all data ingested so far for the session with the specified sessionId
-	// into a single file with one bundle JSON per line.
-	DownloadSession(sessionId string, outputFile string) *api.ApiErrorResponse
+	// ReadSession reads all data points for the specified Session that were collected so far. If region is not
+	// provided, the appropriate region will be looked up by calling DescribeSession first.
+	ReadSession(sessionId string, region *string) *api.ApiErrorResponse
 
 	// UpdateSessionLabels replaces the existing session labels with the provided labels for the specified sessionId.
 	UpdateSessionLabels(sessionId string, labels []string) *api.ApiErrorResponse
@@ -117,11 +116,10 @@ func (client *clientImpl) UpdateSessionLabels(sessionId string, labels []string)
 	return client.dataPlaneClient.UpdateSessionLabels(sessionId, labels)
 }
 
-func (client *clientImpl) DownloadSession(sessionId string, outputFile string) *api.ApiErrorResponse {
-	return client.dataPlaneClient.DownloadSession(sessionId)
+func (client *clientImpl) ReadSession(sessionId string, region *string) *api.ApiErrorResponse {
+	return client.dataPlaneClient.ReadSession(sessionId, region)
 }
 
 func (client *clientImpl) WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse) {
-	time.Now()
 	return client.dataPlaneClient.WhoAmI()
 }

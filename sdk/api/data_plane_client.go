@@ -178,7 +178,24 @@ func (client *DataPlaneClient) ListSessionSignals(sessionId string, region *stri
 	return &response, nil
 }
 
-func (client *DataPlaneClient) DownloadSession(sessionId string) *ApiErrorResponse {
+func (client *DataPlaneClient) ReadSession(sessionId string, region *string) *ApiErrorResponse {
+	// If region is nil, we need to first lookup the session to get the region to use
+	var regionId *string
+
+	if region != nil {
+		regionId = region
+	} else {
+		resolvedId, err := client.findRegionId(sessionId)
+		if err != nil {
+			return err
+		}
+		regionId = resolvedId
+	}
+
+	// Modify the base url for this call
+	defer client.resetBaseUrl()
+	client.apiClient.BaseUrl = client.baseUrl(*regionId)
+
 	err := client.apiClient.Get(
 		NewDynamicPath("/v2/sessions/:sessionId/bundles", map[string]string{"sessionId": sessionId}),
 		nil)
