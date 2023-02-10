@@ -95,7 +95,7 @@ func (client *clientImpl) ListSessions(listSessionConfig config.ListSessionConfi
 		return nil, err
 	}
 
-	paginatedSession := models.NewPaginatedSession(sessionList)
+	paginatedSession := models.NewPaginatedSession(sessionList, listSessionConfig, client.dataPlaneClient)
 
 	return &paginatedSession, nil
 }
