@@ -61,12 +61,6 @@ func (client *DataPlaneClient) resetBaseUrl() {
 func (client *DataPlaneClient) ListSessions(listSessionConfig config.ListSessionConfig) (*dataPlaneProto.SessionListResponse, *ApiErrorResponse) {
 	params := url.Values{}
 
-	page := 1
-	if listSessionConfig.Page != 0 {
-		page = listSessionConfig.Page
-	}
-	params.Add("page", strconv.Itoa(page))
-
 	sessionsPerPage := 50
 	if listSessionConfig.SessionsPerPage != 0 {
 		sessionsPerPage = listSessionConfig.SessionsPerPage

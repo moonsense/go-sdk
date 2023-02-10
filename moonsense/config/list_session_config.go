@@ -7,9 +7,6 @@ import (
 )
 
 type ListSessionConfig struct {
-	// The Page of Sessions to return
-	Page int
-
 	// The number of Sessions to return per page
 	SessionsPerPage int
 
