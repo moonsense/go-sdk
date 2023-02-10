@@ -151,7 +151,7 @@ func (client *DataPlaneClient) ListSessionFeatures(sessionId string, region *str
 	defer client.resetBaseUrl()
 	client.apiClient.BaseUrl = client.baseUrl(*regionId)
 
-	var response *dataPlaneProto.FeatureListResponse
+	var response dataPlaneProto.FeatureListResponse
 	err := client.apiClient.Get(
 		NewDynamicPath("/v2/sessions/:sessionId/features", map[string]string{"sessionId": sessionId}),
 		&response)
@@ -159,7 +159,7 @@ func (client *DataPlaneClient) ListSessionFeatures(sessionId string, region *str
 		return nil, err
 	}
 
-	return response, nil
+	return &response, nil
 }
 
 func (client *DataPlaneClient) ListSessionSignals(sessionId string, region *string) (*dataPlaneProto.SignalsResponse, *ApiErrorResponse) {
@@ -180,7 +180,7 @@ func (client *DataPlaneClient) ListSessionSignals(sessionId string, region *stri
 	defer client.resetBaseUrl()
 	client.apiClient.BaseUrl = client.baseUrl(*regionId)
 
-	var response *dataPlaneProto.SignalsResponse
+	var response dataPlaneProto.SignalsResponse
 	err := client.apiClient.Get(
 		NewDynamicPath("/v2/sessions/:sessionId/signals", map[string]string{"sessionId": sessionId}),
 		&response)
@@ -188,5 +188,5 @@ func (client *DataPlaneClient) ListSessionSignals(sessionId string, region *stri
 		return nil, err
 	}
 
-	return response, nil
+	return &response, nil
 }
