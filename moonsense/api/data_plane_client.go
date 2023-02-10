@@ -1,4 +1,4 @@
-package sdk
+package api
 
 import (
 	"fmt"
@@ -7,18 +7,18 @@ import (
 	"strconv"
 	"time"
 
-	cfg "github.com/moonsense/go-sdk/sdk/config"
-	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
-	dataPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane"
-	dataPlaneSDKProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane-sdk"
+	"github.com/moonsense/go-sdk/moonsense/config"
+	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
+	dataPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane"
+	dataPlaneSDKProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane-sdk"
 )
 
 type DataPlaneClient struct {
 	apiClient *ApiClient
-	config    cfg.SDKConfig
+	config    config.SDKConfig
 }
 
-func NewDataPlaneClient(c cfg.SDKConfig) *DataPlaneClient {
+func NewDataPlaneClient(c config.SDKConfig) *DataPlaneClient {
 	baseUrl := c.Protocol + "://" + c.DefaultRegion + ".data-api." + c.RootDomain
 
 	api := ApiClient{
@@ -58,7 +58,7 @@ func (client *DataPlaneClient) resetBaseUrl() {
 
 // Public methods
 
-func (client *DataPlaneClient) ListSessions(listSessionConfig cfg.ListSessionConfig) (*dataPlaneProto.SessionListResponse, *ApiErrorResponse) {
+func (client *DataPlaneClient) ListSessions(listSessionConfig config.ListSessionConfig) (*dataPlaneProto.SessionListResponse, *ApiErrorResponse) {
 	params := url.Values{}
 
 	page := 1

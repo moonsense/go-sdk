@@ -1,9 +1,10 @@
-package sdk
+package models
 
 import (
-	api "github.com/moonsense/go-sdk/sdk/api"
-	dataPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane"
-	dataPlaneSDKProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane-sdk"
+	"github.com/moonsense/go-sdk/moonsense/api"
+
+	dataPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane"
+	dataPlaneSDKProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane-sdk"
 )
 
 type PaginatedSession struct {

@@ -10,7 +10,7 @@ import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	common "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
+	common "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 	reflect "reflect"
 	sync "sync"
 )

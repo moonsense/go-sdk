@@ -1,15 +1,15 @@
-package sdk
+package moonsense
 
 import (
 	"os"
 
-	api "github.com/moonsense/go-sdk/sdk/api"
-	cfg "github.com/moonsense/go-sdk/sdk/config"
-	models "github.com/moonsense/go-sdk/sdk/models"
-	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
-	controlPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/control-plane"
-	dataPlaneProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane"
-	dataPlaneSDKProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/data-plane-sdk"
+	api "github.com/moonsense/go-sdk/moonsense/api"
+	cfg "github.com/moonsense/go-sdk/moonsense/config"
+	models "github.com/moonsense/go-sdk/moonsense/models"
+	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
+	controlPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/control-plane"
+	dataPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane"
+	dataPlaneSDKProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane-sdk"
 )
 
 const (

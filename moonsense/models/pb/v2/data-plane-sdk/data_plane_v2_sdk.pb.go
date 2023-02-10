@@ -11,8 +11,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	bundle "github.com/moonsense/go-sdk/sdk/models/pb/v2/bundle"
-	common "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
+	bundle "github.com/moonsense/go-sdk/moonsense/models/pb/v2/bundle"
+	common "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 	reflect "reflect"
 	sync "sync"
 )

@@ -1,4 +1,4 @@
-package sdk
+package config
 
 type SDKConfig struct {
 	// API secret token generated from the Moonsense Cloud web console

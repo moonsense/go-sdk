@@ -1,9 +1,9 @@
-package sdk
+package config
 
 import (
 	"time"
 
-	commonProto "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
+	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 )
 
 type ListSessionConfig struct {

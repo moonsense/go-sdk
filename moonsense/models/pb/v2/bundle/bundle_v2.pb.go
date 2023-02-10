@@ -9,8 +9,8 @@ package bundle
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	common "github.com/moonsense/go-sdk/sdk/models/pb/v2/common"
-	feature "github.com/moonsense/go-sdk/sdk/models/pb/v2/feature"
+	common "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
+	feature "github.com/moonsense/go-sdk/moonsense/models/pb/v2/feature"
 	reflect "reflect"
 	sync "sync"
 )
