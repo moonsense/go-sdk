@@ -1,13 +1,13 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 
 	"github.com/moonsense/go-sdk/moonsense/config"
+	"github.com/moonsense/go-sdk/moonsense/models/pb/v2/bundle"
 	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 	dataPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane"
 	dataPlaneSDKProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane-sdk"
@@ -178,7 +178,7 @@ func (client *DataPlaneClient) ListSessionSignals(sessionId string, region *stri
 	return &response, nil
 }
 
-func (client *DataPlaneClient) ReadSession(sessionId string, region *string) *ApiErrorResponse {
+func (client *DataPlaneClient) ReadSession(sessionId string, region *string) ([]*bundle.SealedBundle, *ApiErrorResponse) {
 	// If region is nil, we need to first lookup the session to get the region to use
 	var regionId *string
 
@@ -187,7 +187,7 @@ func (client *DataPlaneClient) ReadSession(sessionId string, region *string) *Ap
 	} else {
 		resolvedId, err := client.findRegionId(sessionId)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		regionId = resolvedId
 	}
@@ -196,17 +196,16 @@ func (client *DataPlaneClient) ReadSession(sessionId string, region *string) *Ap
 	defer client.resetBaseUrl()
 	client.apiClient.BaseUrl = client.baseUrl(*regionId)
 
+	var response []*bundle.SealedBundle
 	err := client.apiClient.Get(
 		NewDynamicPath("/v2/sessions/:sessionId/bundles", map[string]string{"sessionId": sessionId}),
-		nil)
+		&response)
 
 	if err != nil {
-		fmt.Println("Badness happened!")
-		fmt.Println(err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return response, nil
 }
 
 func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []string) *ApiErrorResponse {

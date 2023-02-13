@@ -6,6 +6,7 @@ import (
 	"github.com/moonsense/go-sdk/moonsense/api"
 	"github.com/moonsense/go-sdk/moonsense/config"
 	"github.com/moonsense/go-sdk/moonsense/models"
+	"github.com/moonsense/go-sdk/moonsense/models/pb/v2/bundle"
 	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 	controlPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/control-plane"
 	dataPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane"
@@ -50,7 +51,7 @@ type Client interface {
 
 	// ReadSession reads all data points for the specified Session that were collected so far. If region is not
 	// provided, the appropriate region will be looked up by calling DescribeSession first.
-	ReadSession(sessionId string, region *string) *api.ApiErrorResponse
+	ReadSession(sessionId string, region *string) ([]*bundle.SealedBundle, *api.ApiErrorResponse)
 
 	// UpdateSessionLabels replaces the existing session labels with the provided labels for the specified sessionId.
 	UpdateSessionLabels(sessionId string, labels []string) *api.ApiErrorResponse
@@ -116,7 +117,7 @@ func (client *clientImpl) UpdateSessionLabels(sessionId string, labels []string)
 	return client.dataPlaneClient.UpdateSessionLabels(sessionId, labels)
 }
 
-func (client *clientImpl) ReadSession(sessionId string, region *string) *api.ApiErrorResponse {
+func (client *clientImpl) ReadSession(sessionId string, region *string) ([]*bundle.SealedBundle, *api.ApiErrorResponse) {
 	return client.dataPlaneClient.ReadSession(sessionId, region)
 }
 

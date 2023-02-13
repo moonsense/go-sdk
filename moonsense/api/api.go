@@ -1,12 +1,16 @@
 package api
 
 import (
+	"archive/tar"
+	"bufio"
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -16,6 +20,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	"github.com/moonsense/go-sdk/moonsense/models/pb/v2/bundle"
 	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 )
 
@@ -206,6 +211,17 @@ func (apiClient *ApiClient) SendAndDeserializeWithHeaders(
 
 	if apiResponse.StatusCode >= 200 && apiResponse.StatusCode < 300 {
 		if response != nil {
+			// TODO: Revist when the API method supports returning a byte array
+			if apiResponse.Header.Get("Content-Type") == "application/octet-stream" {
+				outsideBundles, isOK := response.(*[]*bundle.SealedBundle)
+
+				if isOK {
+					*outsideBundles = apiClient.extractSealedBundles(apiResponse.Body)
+				}
+
+				return apiResponse, nil
+			}
+
 			protoVal, isProto := response.(protoreflect.ProtoMessage)
 
 			if isProto {
@@ -393,4 +409,52 @@ func (apiClient *ApiClient) ProcessRequestWithHeaders(method string,
 	}
 
 	return nil
+}
+
+func (apiClient *ApiClient) extractSealedBundles(gzipStream io.Reader) []*bundle.SealedBundle {
+	var sealedBundles []*bundle.SealedBundle
+
+	uncompressedStream, err := gzip.NewReader(gzipStream)
+	if err != nil {
+		log.Fatal("extractSealedBundles: NewReader failed")
+	}
+
+	tarReader := tar.NewReader(uncompressedStream)
+
+	for {
+		header, err := tarReader.Next()
+
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			log.Fatalf("extractSealedBundles: Next() failed: %s", err.Error())
+		}
+
+		if header.Typeflag == tar.TypeReg {
+			bufferedReader := bufio.NewReader(tarReader)
+
+			for {
+				bytes, err := bufferedReader.ReadBytes('\n')
+
+				if err == io.EOF {
+					break
+				} else if err != nil {
+					fmt.Println(err)
+				} else {
+					var response bundle.SealedBundle
+					err := protojson.Unmarshal(bytes, &response)
+
+					if err != nil {
+						fmt.Println(err)
+					} else {
+						sealedBundles = append(sealedBundles, &response)
+					}
+				}
+			}
+		}
+	}
+
+	return sealedBundles
 }
