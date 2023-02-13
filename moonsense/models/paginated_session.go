@@ -12,7 +12,7 @@ type PaginatedSession struct {
 	Sessions []*dataPlaneSDKProto.Session
 
 	sessionListResponse *dataPlaneProto.SessionListResponse
-	nextPageConfig      config.ListSessionConfig
+	currentPageConfig   config.ListSessionConfig
 	dataPlaneClient     *api.DataPlaneClient
 }
 
@@ -20,32 +20,12 @@ func NewPaginatedSession(sessionListResponse *dataPlaneProto.SessionListResponse
 	listSessionConfig config.ListSessionConfig,
 	dataPlaneClient *api.DataPlaneClient) PaginatedSession {
 
-	// Calculate the next page config based on the incoming session list and such...
-	nextPageConfig := listSessionConfig
-
-	if sessionListResponse.Pagination.NextPage != 0 {
-		lastSession := sessionListResponse.Sessions[len(sessionListResponse.Sessions)-1]
-		nextPageConfig.Until = lastSession.CreatedAt.AsTime()
-	}
-
 	return PaginatedSession{
 		Sessions:            sessionListResponse.Sessions,
 		sessionListResponse: sessionListResponse,
-		nextPageConfig:      nextPageConfig,
+		currentPageConfig:   listSessionConfig,
 		dataPlaneClient:     dataPlaneClient,
 	}
-}
-
-func (ps *PaginatedSession) NumberOfSessions() int {
-	if ps.sessionListResponse == nil {
-		return 0
-	}
-
-	return len(ps.sessionListResponse.Sessions)
-}
-
-func (ps *PaginatedSession) NumberPerPage() int {
-	return ps.nextPageConfig.SessionsPerPage
 }
 
 func (ps *PaginatedSession) HasMoreSessions() bool {
@@ -63,12 +43,18 @@ func (ps *PaginatedSession) NextPage() (*PaginatedSession, *api.ApiErrorResponse
 		return &empty, nil
 	}
 
-	sessionList, err := ps.dataPlaneClient.ListSessions(ps.nextPageConfig)
+	// Calculate the next page config based on the incoming session list and such...
+	lastSession := ps.sessionListResponse.Sessions[len(ps.sessionListResponse.Sessions)-1]
+
+	nextPageConfig := ps.currentPageConfig
+	nextPageConfig.Until = lastSession.CreatedAt.AsTime()
+
+	sessionList, err := ps.dataPlaneClient.ListSessions(nextPageConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	paginatedSession := NewPaginatedSession(sessionList, ps.nextPageConfig, ps.dataPlaneClient)
+	paginatedSession := NewPaginatedSession(sessionList, nextPageConfig, ps.dataPlaneClient)
 
 	return &paginatedSession, nil
 }
