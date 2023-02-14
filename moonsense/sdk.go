@@ -39,6 +39,7 @@ type clientImpl struct {
 	dataPlaneClient    *api.DataPlaneClient
 }
 
+// The Client interface defines the interface for interacting with the Moonsense Cloud.
 type Client interface {
 	// ListRegions retrieves the list of Data Plane regions in the Moonsense Cloud.
 	//
@@ -74,13 +75,16 @@ type Client interface {
 	WhoAmI() (*commonProto.TokenSelfResponse, *api.ApiErrorResponse)
 }
 
+// NewClient returns a new Moonsense Client with the provided SDKConfig.
+// If SDKConfig.SecretToken is not provided, the environment will be checked for the "MOONSENSE_SECRET_TOKEN" variable and will
+// use that as the secret token. If neither are provided, the SDK will panic().
 func NewClient(c config.SDKConfig) Client {
 	if c.SecretToken == "" {
 		secretToken := os.Getenv("MOONSENSE_SECRET_TOKEN")
 		if secretToken != "" {
 			c.SecretToken = secretToken
 		} else {
-			panic("A Secret Token must either be provided in Config.SecretToken or set as an environment variable `MOONSENSE_SECRET_TOKEN`")
+			panic("A Secret Token must either be provided in config.SecretToken or set as an environment variable `MOONSENSE_SECRET_TOKEN`")
 		}
 	}
 	if c.RootDomain == "" {

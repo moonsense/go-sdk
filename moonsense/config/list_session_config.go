@@ -20,6 +20,8 @@ import (
 	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 )
 
+// ListSessionConfig allows for setting the criteria to be used when requesting a
+// list of sessions.
 type ListSessionConfig struct {
 	// The number of Sessions to return per page
 	SessionsPerPage int

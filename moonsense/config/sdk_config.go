@@ -14,6 +14,7 @@
 
 package config
 
+// SDKConfig is used to configure the SDK for accessing the Moonsense Cloud.
 type SDKConfig struct {
 	// API secret token generated from the Moonsense Cloud web console
 	SecretToken string
