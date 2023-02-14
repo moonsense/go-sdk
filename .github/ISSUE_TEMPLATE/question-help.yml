@@ -12,7 +12,7 @@ body:
       description: A clear and concise description of the question.
     validations:
       required: true
-  
+
   - type: textarea
     id: Go-sdk-version
     attributes:
@@ -21,7 +21,7 @@ body:
         Output of `go mod graph` or `go.mod` file listing the `github.com/moonsense/*` entries.
     validations:
       required: true
-      
+
   - type: input
     id: go-version
     attributes:
@@ -35,4 +35,4 @@ body:
     attributes:
       label: Operating System and version
     validations:
-      required: false 
+      required: false
