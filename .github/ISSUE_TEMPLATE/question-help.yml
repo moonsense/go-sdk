@@ -1,0 +1,38 @@
+---
+name: 💬 Question/Help
+description: Get help with issues you are experiencing
+title: "(short issue description)"
+labels: [help-wanted, question]
+assignees: []
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: What is your question?
+      description: A clear and concise description of the question.
+    validations:
+      required: true
+  
+  - type: textarea
+    id: Go-sdk-version
+    attributes:
+      label: Moonsense Go SDK Module Versions Used
+      description: |
+        Output of `go mod graph` or `go.mod` file listing the `github.com/moonsense/*` entries.
+    validations:
+      required: true
+      
+  - type: input
+    id: go-version
+    attributes:
+      label: Go version used
+      description: Output of `go version`
+    validations:
+      required: true
+
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating System and version
+    validations:
+      required: true 
