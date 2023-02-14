@@ -46,14 +46,14 @@ body:
         - label: This feature might incur a breaking change
           required: false
 
-# - type: textarea
-#     id: Go-sdk-version
-#     attributes:
-#       label: Moonsense Go SDK Module Versions Used
-#       description: |
-#         Output of `go mod graph` or `go.mod` file listing the `github.com/moonsense/*` entries.
-#     validations:
-#       required: true
+- type: textarea
+    id: Go-sdk-version
+    attributes:
+      label: Moonsense Go SDK Module Versions Used
+      description: |
+        Output of `go mod graph` or `go.mod` file listing the `github.com/moonsense/*` entries.
+    validations:
+      required: true
       
 #   - type: input
 #     id: go-version
