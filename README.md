@@ -62,7 +62,7 @@ func main() {
 }
 ```
 
-See [example_test.go](https://github.com/moonsense/go-sdk/blob/main/example_test.go) for further examples.
+See [example_test.go](https://github.com/moonsense/go-sdk/blob/main/moonsense/example_test.go) for further examples.
 
 ## Terms Of Service
 
