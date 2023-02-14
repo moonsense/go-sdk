@@ -35,4 +35,4 @@ body:
     attributes:
       label: Operating System and version
     validations:
-      required: true 
+      required: false 
