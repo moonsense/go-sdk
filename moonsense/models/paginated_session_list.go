@@ -8,7 +8,7 @@ import (
 	dataPlaneSDKProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane-sdk"
 )
 
-type PaginatedSession struct {
+type PaginatedSessionList struct {
 	Sessions []*dataPlaneSDKProto.Session
 
 	sessionListResponse *dataPlaneProto.SessionListResponse
@@ -16,11 +16,11 @@ type PaginatedSession struct {
 	dataPlaneClient     *api.DataPlaneClient
 }
 
-func NewPaginatedSession(sessionListResponse *dataPlaneProto.SessionListResponse,
+func NewPaginatedSessionList(sessionListResponse *dataPlaneProto.SessionListResponse,
 	listSessionConfig config.ListSessionConfig,
-	dataPlaneClient *api.DataPlaneClient) PaginatedSession {
+	dataPlaneClient *api.DataPlaneClient) PaginatedSessionList {
 
-	return PaginatedSession{
+	return PaginatedSessionList{
 		Sessions:            sessionListResponse.Sessions,
 		sessionListResponse: sessionListResponse,
 		currentPageConfig:   listSessionConfig,
@@ -28,7 +28,7 @@ func NewPaginatedSession(sessionListResponse *dataPlaneProto.SessionListResponse
 	}
 }
 
-func (ps *PaginatedSession) HasMoreSessions() bool {
+func (ps *PaginatedSessionList) HasMoreSessions() bool {
 	if ps.sessionListResponse == nil ||
 		ps.sessionListResponse.Pagination == nil {
 		return false
@@ -37,9 +37,9 @@ func (ps *PaginatedSession) HasMoreSessions() bool {
 	return ps.sessionListResponse.Pagination.NextPage != 0
 }
 
-func (ps *PaginatedSession) NextPage() (*PaginatedSession, *api.ApiErrorResponse) {
+func (ps *PaginatedSessionList) NextPage() (*PaginatedSessionList, *api.ApiErrorResponse) {
 	if !ps.HasMoreSessions() {
-		empty := PaginatedSession{}
+		empty := PaginatedSessionList{}
 		return &empty, nil
 	}
 
@@ -54,7 +54,7 @@ func (ps *PaginatedSession) NextPage() (*PaginatedSession, *api.ApiErrorResponse
 		return nil, err
 	}
 
-	paginatedSession := NewPaginatedSession(sessionList, nextPageConfig, ps.dataPlaneClient)
+	paginatedSession := NewPaginatedSessionList(sessionList, nextPageConfig, ps.dataPlaneClient)
 
 	return &paginatedSession, nil
 }

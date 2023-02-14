@@ -35,7 +35,7 @@ type Client interface {
 	ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *api.ApiErrorResponse)
 
 	// ListSessions lists the sessions for the current project
-	ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSession, *api.ApiErrorResponse)
+	ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSessionList, *api.ApiErrorResponse)
 
 	// DescribeSession returns the details of a session with the specified sessionId. If minimal is set to true
 	// only total values are returned for counters.
@@ -90,15 +90,15 @@ func (client *clientImpl) ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *
 	return client.controlPlaneClient.ListRegions()
 }
 
-func (client *clientImpl) ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSession, *api.ApiErrorResponse) {
+func (client *clientImpl) ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSessionList, *api.ApiErrorResponse) {
 	sessionList, err := client.dataPlaneClient.ListSessions(listSessionConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	paginatedSession := models.NewPaginatedSession(sessionList, listSessionConfig, client.dataPlaneClient)
+	paginatedSessionList := models.NewPaginatedSessionList(sessionList, listSessionConfig, client.dataPlaneClient)
 
-	return &paginatedSession, nil
+	return &paginatedSessionList, nil
 }
 
 func (client *clientImpl) DescribeSession(sessionId string, minimal bool) (*dataPlaneSDKProto.Session, *api.ApiErrorResponse) {
