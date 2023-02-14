@@ -1,6 +1,6 @@
 # Moonsense SDK for Go
 
-[![Apache V2 License](https://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/moonsense/go-sdk/blob/main/LICENSE)
+[![Go Reference](https://pkg.go.dev/badge/github.com/moonsense/go-sdk/moonsense/.svg)](https://pkg.go.dev/github.com/moonsense/go-sdk/moonsense/)[![Apache V2 License](https://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/moonsense/go-sdk/blob/main/LICENSE)
 
 Simple Go SDK for the Moonsense Cloud API.
 
