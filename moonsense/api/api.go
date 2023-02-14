@@ -172,12 +172,12 @@ func (apiClient *ApiClient) send(method string, relativePath RequestPath,
 		req.Header.Set(header, value)
 	}
 
-	// Set the default Content-Type to protobuf if none was set already
+	// Set default Content-Type to protobuf if none was set already
 	if req.Header.Get("Content-Type") == "" {
 		req.Header.Set("Content-Type", "application/x-protobuf")
 	}
 
-	// Set the default Accept to protobuf if none was set already
+	// Set default Accept to protobuf if none was set already
 	if req.Header.Get("Accept") == "" {
 		req.Header.Set("Accept", "application/x-protobuf")
 	}
