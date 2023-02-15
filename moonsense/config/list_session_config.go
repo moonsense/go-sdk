@@ -20,6 +20,14 @@ import (
 	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 )
 
+const (
+	// Default number of sessions to return when not specified
+	DefaultSessionsPerPage = 25
+
+	// Maximum number of sessions to return per page
+	MaxSessionsPerPage = 100
+)
+
 // ListSessionConfig allows for setting the criteria to be used when requesting a
 // list of sessions.
 type ListSessionConfig struct {
