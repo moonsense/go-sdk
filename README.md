@@ -6,10 +6,10 @@ Simple Go SDK for the Moonsense Cloud API.
 
 ## Installation
 
-Install the module using `go install`: 
+Install the module using `go get`: 
 
 ```shell
-go install github.com/moonsense/go-sdk
+go get github.com/moonsense/go-sdk
 ```
 
 ## Getting Started

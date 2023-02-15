@@ -16,10 +16,10 @@
 //
 // # Getting started
 //
-// The best way to get started working with the SDK is to use `go install` to add the
+// The best way to get started working with the SDK is to use `go get` to add the
 // SDK to your Go dependencies explicitly.
 //
-//	go install github.com/moonsense/go-sdk
+//	go get github.com/moonsense/go-sdk
 //
 // Once you have installed the SDK, you will need an API secret key. Navigate to your App in the Moonsense Console and create a token.
 // You will need to save the generated secret key to a secure place.
