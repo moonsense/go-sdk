@@ -1,3 +1,17 @@
+// Copyright 2023 Moonsense, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package models
 
 import (
@@ -8,7 +22,10 @@ import (
 	dataPlaneSDKProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane-sdk"
 )
 
+// A PaginatedSessionList provides a wrapper around the list sessions response which allows for
+// paginated loading of the sessions.
 type PaginatedSessionList struct {
+	// The sessions contained on this page
 	Sessions []*dataPlaneSDKProto.Session
 
 	sessionListResponse *dataPlaneProto.SessionListResponse
@@ -16,6 +33,7 @@ type PaginatedSessionList struct {
 	dataPlaneClient     *api.DataPlaneClient
 }
 
+// Creates a new PaginatedSessionList.
 func NewPaginatedSessionList(sessionListResponse *dataPlaneProto.SessionListResponse,
 	listSessionConfig config.ListSessionConfig,
 	dataPlaneClient *api.DataPlaneClient) PaginatedSessionList {
@@ -28,6 +46,7 @@ func NewPaginatedSessionList(sessionListResponse *dataPlaneProto.SessionListResp
 	}
 }
 
+// Returns true when there are more sessions to be fetched, otherwise false.
 func (ps *PaginatedSessionList) HasMoreSessions() bool {
 	if ps.sessionListResponse == nil ||
 		ps.sessionListResponse.Pagination == nil {
@@ -37,6 +56,7 @@ func (ps *PaginatedSessionList) HasMoreSessions() bool {
 	return ps.sessionListResponse.Pagination.NextPage != 0
 }
 
+// Fetches the next page of sessions.
 func (ps *PaginatedSessionList) NextPage() (*PaginatedSessionList, *api.ApiErrorResponse) {
 	if !ps.HasMoreSessions() {
 		empty := PaginatedSessionList{}

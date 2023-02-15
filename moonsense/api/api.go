@@ -1,3 +1,17 @@
+// Copyright 2023 Moonsense, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package api
 
 import (
@@ -131,7 +145,7 @@ func (apiClient *ApiClient) send(method string, relativePath RequestPath,
 		byteBuffer, isBytes := request.(*bytes.Buffer)
 
 		if isProto {
-			requestBodyBytes, err = protojson.Marshal(protoVal)
+			requestBodyBytes, err = proto.Marshal(protoVal)
 		} else if isBytes {
 			requestBody = byteBuffer
 		} else {
@@ -172,9 +186,14 @@ func (apiClient *ApiClient) send(method string, relativePath RequestPath,
 		req.Header.Set(header, value)
 	}
 
-	// Set the default Content-Type to json if none was set already
+	// Set default Content-Type to protobuf if none was set already
 	if req.Header.Get("Content-Type") == "" {
-		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Content-Type", "application/x-protobuf")
+	}
+
+	// Set default Accept to protobuf if none was set already
+	if req.Header.Get("Accept") == "" {
+		req.Header.Set("Accept", "application/x-protobuf")
 	}
 
 	if apiClient.HeaderBasedAccessKey != "" {
@@ -254,7 +273,7 @@ func (apiClient *ApiClient) deserializeProto(body io.Reader, response proto.Mess
 		return err
 	}
 
-	if err := protojson.Unmarshal(responseBody, response); err != nil {
+	if err := proto.Unmarshal(responseBody, response); err != nil {
 		return err
 	}
 
@@ -391,7 +410,7 @@ func (apiClient *ApiClient) ProcessRequestWithHeaders(method string,
 		if strings.HasPrefix(errorMessage, "{") {
 
 			var response commonProto.ErrorResponse
-			if err := protojson.Unmarshal([]byte(errorMessage), &response); err == nil {
+			if err := proto.Unmarshal([]byte(errorMessage), &response); err == nil {
 				errorMessage = response.Message
 			}
 		}
