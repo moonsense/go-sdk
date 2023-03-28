@@ -47,7 +47,7 @@ func NewPaginatedSessionList(sessionListResponse *dataPlaneProto.SessionListResp
 }
 
 // Returns true when there are more sessions to be fetched, otherwise false.
-func (ps *PaginatedSessionList) HasMoreSessions() bool {
+func (ps *PaginatedSessionList) HasMore() bool {
 	if ps.sessionListResponse == nil ||
 		ps.sessionListResponse.Pagination == nil {
 		return false
@@ -58,7 +58,7 @@ func (ps *PaginatedSessionList) HasMoreSessions() bool {
 
 // Fetches the next page of sessions.
 func (ps *PaginatedSessionList) NextPage() (*PaginatedSessionList, *api.ApiErrorResponse) {
-	if !ps.HasMoreSessions() {
+	if !ps.HasMore() {
 		empty := PaginatedSessionList{}
 		return &empty, nil
 	}
@@ -74,7 +74,7 @@ func (ps *PaginatedSessionList) NextPage() (*PaginatedSessionList, *api.ApiError
 		return nil, err
 	}
 
-	paginatedSession := NewPaginatedSessionList(sessionList, nextPageConfig, ps.dataPlaneClient)
+	paginatedSessionList := NewPaginatedSessionList(sessionList, nextPageConfig, ps.dataPlaneClient)
 
-	return &paginatedSession, nil
+	return &paginatedSessionList, nil
 }

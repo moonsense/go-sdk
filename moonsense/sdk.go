@@ -58,7 +58,7 @@ type Client interface {
 
 	// ListSessionFeatures returns the features for the specified sessionId. If region is not provided, the
 	// appropriate region will be looked up by calling DescribeSession first.
-	ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *api.ApiErrorResponse)
+	ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.SessionFeaturesResponse, *api.ApiErrorResponse)
 
 	// ListSessionSignals returns the signals for the specified sessionId. If region is not provided, the
 	// appropriate region will be looked up by calling DescribeSession first.
@@ -123,7 +123,7 @@ func (client *clientImpl) DescribeSession(sessionId string, minimal bool) (*data
 	return client.dataPlaneClient.DescribeSession(sessionId, minimal)
 }
 
-func (client *clientImpl) ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *api.ApiErrorResponse) {
+func (client *clientImpl) ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.SessionFeaturesResponse, *api.ApiErrorResponse) {
 	return client.dataPlaneClient.ListSessionFeatures(sessionId, region)
 }
 

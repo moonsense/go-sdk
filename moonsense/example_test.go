@@ -81,7 +81,7 @@ func Example_listSessions() {
 
 		// After iterating across the first page of sessions, check to see if there are more available for this
 		// criteria, and if so, fetch the next page of sessions.
-		if paginatedSessions.HasMoreSessions() {
+		if paginatedSessions.HasMore() {
 			paginatedSessions, err = paginatedSessions.NextPage()
 		} else {
 			break
