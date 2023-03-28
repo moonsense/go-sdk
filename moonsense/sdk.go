@@ -49,6 +49,14 @@ type Client interface {
 	// See: https://api.moonsense.cloud/v2/regions
 	ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *api.ApiErrorResponse)
 
+	// ListJourneys lists the journeys for the current project.
+	ListJourneys(listJourneyConfig config.ListJourneyConfig) (*models.PaginatedJourneyList, *api.ApiErrorResponse)
+
+	// DescribeJourney returns the details of a journey with the specified journeyId. The journey
+	// response includes the list of sessions associated with the journey.
+	// only total values are returned for counters.
+	DescribeJourney(journeyId string) (*dataPlaneProto.JourneyDetailResponse, *api.ApiErrorResponse)
+
 	// ListSessions lists the sessions for the current project
 	ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSessionList, *api.ApiErrorResponse)
 
@@ -106,6 +114,21 @@ func NewClient(c config.SDKConfig) Client {
 
 func (client *clientImpl) ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *api.ApiErrorResponse) {
 	return client.controlPlaneClient.ListRegions()
+}
+
+func (client *clientImpl) ListJourneys(listJourneyConfig config.ListJourneyConfig) (*models.PaginatedJourneyList, *api.ApiErrorResponse) {
+	journeyList, err := client.dataPlaneClient.ListJourneys(listJourneyConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	paginatedJourneyList := models.NewPaginatedJourneyList(journeyList, listJourneyConfig, client.dataPlaneClient)
+
+	return &paginatedJourneyList, nil
+}
+
+func (client *clientImpl) DescribeJourney(journeyId string) (*dataPlaneProto.JourneyDetailResponse, *api.ApiErrorResponse) {
+	return client.dataPlaneClient.DescribeJourney(journeyId)
 }
 
 func (client *clientImpl) ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSessionList, *api.ApiErrorResponse) {

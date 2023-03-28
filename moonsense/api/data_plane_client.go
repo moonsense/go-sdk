@@ -76,6 +76,54 @@ func (client *DataPlaneClient) resetBaseUrl() {
 
 // Public methods
 
+func (client *DataPlaneClient) ListJourneys(listJourneyConfig config.ListJourneyConfig) (*dataPlaneProto.JourneyListResponse, *ApiErrorResponse) {
+	params := url.Values{}
+
+	journeysPerPage := listJourneyConfig.JourneysPerPage
+	if journeysPerPage < 0 {
+		journeysPerPage = config.DefaultJourneysPerPage
+	} else if journeysPerPage > config.MaxJourneysPerPage {
+		journeysPerPage = config.MaxJourneysPerPage
+	}
+	params.Add("per_page", strconv.Itoa(journeysPerPage))
+
+	for _, platform := range listJourneyConfig.Platforms {
+		params.Add("filter[platforms][]", platform.String())
+	}
+
+	if !listJourneyConfig.Since.IsZero() {
+		params.Add("filter[min_created_at]", listJourneyConfig.Since.Format(time.RFC3339))
+	}
+
+	if !listJourneyConfig.Until.IsZero() {
+		params.Add("filter[max_created_at]", listJourneyConfig.Until.Format(time.RFC3339))
+	}
+
+	var response dataPlaneProto.JourneyListResponse
+	err := client.apiClient.Get(
+		NewDynamicPathWithQueryParams(dataPlaneVersion+"/journeys", map[string]string{}, params),
+		&response)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func (client *DataPlaneClient) DescribeJourney(journeyId string) (*dataPlaneProto.JourneyDetailResponse, *ApiErrorResponse) {
+	var response dataPlaneProto.JourneyDetailResponse
+
+	err := client.apiClient.Get(
+		NewDynamicPath(dataPlaneVersion+"/journeys/:journeyId", map[string]string{"journeyId": journeyId}),
+		&response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
 func (client *DataPlaneClient) ListSessions(listSessionConfig config.ListSessionConfig) (*dataPlaneProto.SessionListResponse, *ApiErrorResponse) {
 	params := url.Values{}
 
