@@ -813,6 +813,201 @@ var _ interface {
 	ErrorName() string
 } = WebhookPayloadValidationError{}
 
+// Validate checks the field values on Journey with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Journey) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Journey with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in JourneyMultiError, or nil if none found.
+func (m *Journey) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Journey) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for JourneyId
+
+	// no validation rules for AppId
+
+	if all {
+		switch v := interface{}(m.GetOldestEvent()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, JourneyValidationError{
+					field:  "OldestEvent",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, JourneyValidationError{
+					field:  "OldestEvent",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetOldestEvent()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JourneyValidationError{
+				field:  "OldestEvent",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetNewestEvent()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, JourneyValidationError{
+					field:  "NewestEvent",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, JourneyValidationError{
+					field:  "NewestEvent",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetNewestEvent()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JourneyValidationError{
+				field:  "NewestEvent",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, JourneyValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, JourneyValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JourneyValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for SessionCount
+
+	// no validation rules for PrimaryPlatform
+
+	// no validation rules for PrimaryRegionId
+
+	if len(errors) > 0 {
+		return JourneyMultiError(errors)
+	}
+
+	return nil
+}
+
+// JourneyMultiError is an error wrapping multiple validation errors returned
+// by Journey.ValidateAll() if the designated constraints aren't met.
+type JourneyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m JourneyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m JourneyMultiError) AllErrors() []error { return m }
+
+// JourneyValidationError is the validation error returned by Journey.Validate
+// if the designated constraints aren't met.
+type JourneyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e JourneyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e JourneyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e JourneyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e JourneyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e JourneyValidationError) ErrorName() string { return "JourneyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e JourneyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sJourney.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = JourneyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = JourneyValidationError{}
+
 // Validate checks the field values on SessionListResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -1081,6 +1276,336 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SessionDeleteResponseValidationError{}
+
+// Validate checks the field values on JourneyListResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *JourneyListResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on JourneyListResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// JourneyListResponseMultiError, or nil if none found.
+func (m *JourneyListResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *JourneyListResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetJourneys() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, JourneyListResponseValidationError{
+						field:  fmt.Sprintf("Journeys[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, JourneyListResponseValidationError{
+						field:  fmt.Sprintf("Journeys[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return JourneyListResponseValidationError{
+					field:  fmt.Sprintf("Journeys[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if all {
+		switch v := interface{}(m.GetPagination()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, JourneyListResponseValidationError{
+					field:  "Pagination",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, JourneyListResponseValidationError{
+					field:  "Pagination",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPagination()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JourneyListResponseValidationError{
+				field:  "Pagination",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return JourneyListResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// JourneyListResponseMultiError is an error wrapping multiple validation
+// errors returned by JourneyListResponse.ValidateAll() if the designated
+// constraints aren't met.
+type JourneyListResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m JourneyListResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m JourneyListResponseMultiError) AllErrors() []error { return m }
+
+// JourneyListResponseValidationError is the validation error returned by
+// JourneyListResponse.Validate if the designated constraints aren't met.
+type JourneyListResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e JourneyListResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e JourneyListResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e JourneyListResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e JourneyListResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e JourneyListResponseValidationError) ErrorName() string {
+	return "JourneyListResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e JourneyListResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sJourneyListResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = JourneyListResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = JourneyListResponseValidationError{}
+
+// Validate checks the field values on JourneyDetailResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *JourneyDetailResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on JourneyDetailResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// JourneyDetailResponseMultiError, or nil if none found.
+func (m *JourneyDetailResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *JourneyDetailResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetJourney()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, JourneyDetailResponseValidationError{
+					field:  "Journey",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, JourneyDetailResponseValidationError{
+					field:  "Journey",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetJourney()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JourneyDetailResponseValidationError{
+				field:  "Journey",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetSessions() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, JourneyDetailResponseValidationError{
+						field:  fmt.Sprintf("Sessions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, JourneyDetailResponseValidationError{
+						field:  fmt.Sprintf("Sessions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return JourneyDetailResponseValidationError{
+					field:  fmt.Sprintf("Sessions[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return JourneyDetailResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// JourneyDetailResponseMultiError is an error wrapping multiple validation
+// errors returned by JourneyDetailResponse.ValidateAll() if the designated
+// constraints aren't met.
+type JourneyDetailResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m JourneyDetailResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m JourneyDetailResponseMultiError) AllErrors() []error { return m }
+
+// JourneyDetailResponseValidationError is the validation error returned by
+// JourneyDetailResponse.Validate if the designated constraints aren't met.
+type JourneyDetailResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e JourneyDetailResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e JourneyDetailResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e JourneyDetailResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e JourneyDetailResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e JourneyDetailResponseValidationError) ErrorName() string {
+	return "JourneyDetailResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e JourneyDetailResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sJourneyDetailResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = JourneyDetailResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = JourneyDetailResponseValidationError{}
 
 // Validate checks the field values on ChunksListResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -2341,6 +2866,490 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = FeatureListResponseValidationError{}
+
+// Validate checks the field values on SessionFeaturesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SessionFeaturesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SessionFeaturesResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SessionFeaturesResponseMultiError, or nil if none found.
+func (m *SessionFeaturesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SessionFeaturesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for SessionId
+
+	{
+		sorted_keys := make([]string, len(m.GetClientSdk()))
+		i := 0
+		for key := range m.GetClientSdk() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetClientSdk()[key]
+			_ = val
+
+			// no validation rules for ClientSdk[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, SessionFeaturesResponseValidationError{
+							field:  fmt.Sprintf("ClientSdk[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, SessionFeaturesResponseValidationError{
+							field:  fmt.Sprintf("ClientSdk[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return SessionFeaturesResponseValidationError{
+						field:  fmt.Sprintf("ClientSdk[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetCloudNetwork()))
+		i := 0
+		for key := range m.GetCloudNetwork() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetCloudNetwork()[key]
+			_ = val
+
+			// no validation rules for CloudNetwork[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, SessionFeaturesResponseValidationError{
+							field:  fmt.Sprintf("CloudNetwork[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, SessionFeaturesResponseValidationError{
+							field:  fmt.Sprintf("CloudNetwork[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return SessionFeaturesResponseValidationError{
+						field:  fmt.Sprintf("CloudNetwork[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetCloudBehavioral()))
+		i := 0
+		for key := range m.GetCloudBehavioral() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetCloudBehavioral()[key]
+			_ = val
+
+			// no validation rules for CloudBehavioral[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, SessionFeaturesResponseValidationError{
+							field:  fmt.Sprintf("CloudBehavioral[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, SessionFeaturesResponseValidationError{
+							field:  fmt.Sprintf("CloudBehavioral[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return SessionFeaturesResponseValidationError{
+						field:  fmt.Sprintf("CloudBehavioral[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	if len(errors) > 0 {
+		return SessionFeaturesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// SessionFeaturesResponseMultiError is an error wrapping multiple validation
+// errors returned by SessionFeaturesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type SessionFeaturesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SessionFeaturesResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SessionFeaturesResponseMultiError) AllErrors() []error { return m }
+
+// SessionFeaturesResponseValidationError is the validation error returned by
+// SessionFeaturesResponse.Validate if the designated constraints aren't met.
+type SessionFeaturesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SessionFeaturesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SessionFeaturesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SessionFeaturesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SessionFeaturesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SessionFeaturesResponseValidationError) ErrorName() string {
+	return "SessionFeaturesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SessionFeaturesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSessionFeaturesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SessionFeaturesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SessionFeaturesResponseValidationError{}
+
+// Validate checks the field values on JourneyFeaturesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *JourneyFeaturesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on JourneyFeaturesResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// JourneyFeaturesResponseMultiError, or nil if none found.
+func (m *JourneyFeaturesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *JourneyFeaturesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for JourneyId
+
+	{
+		sorted_keys := make([]string, len(m.GetClientSdk()))
+		i := 0
+		for key := range m.GetClientSdk() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetClientSdk()[key]
+			_ = val
+
+			// no validation rules for ClientSdk[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, JourneyFeaturesResponseValidationError{
+							field:  fmt.Sprintf("ClientSdk[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, JourneyFeaturesResponseValidationError{
+							field:  fmt.Sprintf("ClientSdk[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return JourneyFeaturesResponseValidationError{
+						field:  fmt.Sprintf("ClientSdk[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetCloudNetwork()))
+		i := 0
+		for key := range m.GetCloudNetwork() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetCloudNetwork()[key]
+			_ = val
+
+			// no validation rules for CloudNetwork[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, JourneyFeaturesResponseValidationError{
+							field:  fmt.Sprintf("CloudNetwork[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, JourneyFeaturesResponseValidationError{
+							field:  fmt.Sprintf("CloudNetwork[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return JourneyFeaturesResponseValidationError{
+						field:  fmt.Sprintf("CloudNetwork[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetCloudBehavioral()))
+		i := 0
+		for key := range m.GetCloudBehavioral() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetCloudBehavioral()[key]
+			_ = val
+
+			// no validation rules for CloudBehavioral[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, JourneyFeaturesResponseValidationError{
+							field:  fmt.Sprintf("CloudBehavioral[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, JourneyFeaturesResponseValidationError{
+							field:  fmt.Sprintf("CloudBehavioral[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return JourneyFeaturesResponseValidationError{
+						field:  fmt.Sprintf("CloudBehavioral[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	if len(errors) > 0 {
+		return JourneyFeaturesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// JourneyFeaturesResponseMultiError is an error wrapping multiple validation
+// errors returned by JourneyFeaturesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type JourneyFeaturesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m JourneyFeaturesResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m JourneyFeaturesResponseMultiError) AllErrors() []error { return m }
+
+// JourneyFeaturesResponseValidationError is the validation error returned by
+// JourneyFeaturesResponse.Validate if the designated constraints aren't met.
+type JourneyFeaturesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e JourneyFeaturesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e JourneyFeaturesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e JourneyFeaturesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e JourneyFeaturesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e JourneyFeaturesResponseValidationError) ErrorName() string {
+	return "JourneyFeaturesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e JourneyFeaturesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sJourneyFeaturesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = JourneyFeaturesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = JourneyFeaturesResponseValidationError{}
 
 // Validate checks the field values on SignalsResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, the
