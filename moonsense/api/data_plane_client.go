@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	dataPlaneVersion = "/v2"
+	version = "/v2"
 )
 
 type DataPlaneClient struct {
@@ -101,7 +101,7 @@ func (client *DataPlaneClient) ListJourneys(listJourneyConfig config.ListJourney
 
 	var response dataPlaneProto.JourneyListResponse
 	err := client.apiClient.Get(
-		NewDynamicPathWithQueryParams(dataPlaneVersion+"/journeys", map[string]string{}, params),
+		NewDynamicPathWithQueryParams(version+"/journeys", map[string]string{}, params),
 		&response)
 
 	if err != nil {
@@ -115,7 +115,7 @@ func (client *DataPlaneClient) DescribeJourney(journeyId string) (*dataPlaneProt
 	var response dataPlaneProto.JourneyDetailResponse
 
 	err := client.apiClient.Get(
-		NewDynamicPath(dataPlaneVersion+"/journeys/:journeyId", map[string]string{"journeyId": journeyId}),
+		NewDynamicPath(version+"/journeys/:journeyId", map[string]string{"journeyId": journeyId}),
 		&response)
 	if err != nil {
 		return nil, err
@@ -157,7 +157,7 @@ func (client *DataPlaneClient) ListSessions(listSessionConfig config.ListSession
 
 	var response dataPlaneProto.SessionListResponse
 	err := client.apiClient.Get(
-		NewDynamicPathWithQueryParams(dataPlaneVersion+"/sessions", map[string]string{}, params),
+		NewDynamicPathWithQueryParams(version+"/sessions", map[string]string{}, params),
 		&response)
 
 	if err != nil {
@@ -179,7 +179,7 @@ func (client *DataPlaneClient) DescribeSession(sessionId string, minimal bool) (
 	params.Add("view", view)
 
 	err := client.apiClient.Get(
-		NewDynamicPathWithQueryParams(dataPlaneVersion+"/sessions/:sessionId", map[string]string{"sessionId": sessionId}, params),
+		NewDynamicPathWithQueryParams(version+"/sessions/:sessionId", map[string]string{"sessionId": sessionId}, params),
 		&response)
 	if err != nil {
 		return nil, err
@@ -208,7 +208,7 @@ func (client *DataPlaneClient) ListSessionFeatures(sessionId string, region *str
 
 	var response dataPlaneProto.SessionFeaturesResponse
 	err := client.apiClient.Get(
-		NewDynamicPath(dataPlaneVersion+"/sessions/:sessionId/features", map[string]string{"sessionId": sessionId}),
+		NewDynamicPath(version+"/sessions/:sessionId/features", map[string]string{"sessionId": sessionId}),
 		&response)
 	if err != nil {
 		return nil, err
@@ -237,7 +237,7 @@ func (client *DataPlaneClient) ListSessionSignals(sessionId string, region *stri
 
 	var response dataPlaneProto.SignalsResponse
 	err := client.apiClient.Get(
-		NewDynamicPath(dataPlaneVersion+"/sessions/:sessionId/signals", map[string]string{"sessionId": sessionId}),
+		NewDynamicPath(version+"/sessions/:sessionId/signals", map[string]string{"sessionId": sessionId}),
 		&response)
 	if err != nil {
 		return nil, err
@@ -266,7 +266,7 @@ func (client *DataPlaneClient) ReadSession(sessionId string, region *string) ([]
 
 	var response []*bundle.SealedBundle
 	err := client.apiClient.Get(
-		NewDynamicPath(dataPlaneVersion+"/sessions/:sessionId/bundles", map[string]string{"sessionId": sessionId}),
+		NewDynamicPath(version+"/sessions/:sessionId/bundles", map[string]string{"sessionId": sessionId}),
 		&response)
 
 	if err != nil {
@@ -289,7 +289,7 @@ func (client *DataPlaneClient) UpdateSessionLabels(sessionId string, labels []st
 	}
 
 	err := client.apiClient.Post(
-		NewDynamicPath(dataPlaneVersion+"/sessions/:sessionId/labels", map[string]string{"sessionId": sessionId}),
+		NewDynamicPath(version+"/sessions/:sessionId/labels", map[string]string{"sessionId": sessionId}),
 		&request,
 		&response)
 
@@ -300,7 +300,7 @@ func (client *DataPlaneClient) WhoAmI() (*commonProto.TokenSelfResponse, *ApiErr
 	var response commonProto.TokenSelfResponse
 
 	err := client.apiClient.Get(
-		NewStaticPath(dataPlaneVersion+"/tokens/self"),
+		NewStaticPath(version+"/tokens/self"),
 		&response)
 	if err != nil {
 		return nil, err
