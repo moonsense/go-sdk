@@ -25,6 +25,7 @@ import (
 	controlPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/control-plane"
 	dataPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane"
 	dataPlaneSDKProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane-sdk"
+	journeyFeedbackProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/journeys"
 )
 
 const (
@@ -54,8 +55,15 @@ type Client interface {
 
 	// DescribeJourney returns the details of a journey with the specified journeyId. The journey
 	// response includes the list of sessions associated with the journey.
-	// only total values are returned for counters.
 	DescribeJourney(journeyId string) (*dataPlaneProto.JourneyDetailResponse, *api.ApiErrorResponse)
+
+	// GetJourneyFeedback returns the feedback associated with a journey with the specified journeyId.
+	GetJourneyFeedback(journeyId string) (*journeyFeedbackProto.JourneyFeedback, *api.ApiErrorResponse)
+
+	// AddJourneyFeedback sets the feedback associated with a journey with the specified journeyId.
+	// Feedback is additive. If the feedback type already exists, it will be overwritten. If the
+	// feedback type does not exist, it will be added.
+	AddJourneyFeedback(journeyId string, feedback *journeyFeedbackProto.JourneyFeedback) *api.ApiErrorResponse
 
 	// ListSessions lists the sessions for the current project
 	ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSessionList, *api.ApiErrorResponse)
@@ -129,6 +137,14 @@ func (client *clientImpl) ListJourneys(listJourneyConfig config.ListJourneyConfi
 
 func (client *clientImpl) DescribeJourney(journeyId string) (*dataPlaneProto.JourneyDetailResponse, *api.ApiErrorResponse) {
 	return client.dataPlaneClient.DescribeJourney(journeyId)
+}
+
+func (client *clientImpl) GetJourneyFeedback(journeyId string) (*journeyFeedbackProto.JourneyFeedback, *api.ApiErrorResponse) {
+	return client.dataPlaneClient.GetJourneyFeedback(journeyId)
+}
+
+func (client *clientImpl) AddJourneyFeedback(journeyId string, feedback *journeyFeedbackProto.JourneyFeedback) *api.ApiErrorResponse {
+	return client.dataPlaneClient.AddJourneyFeedback(journeyId, feedback)
 }
 
 func (client *clientImpl) ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSessionList, *api.ApiErrorResponse) {

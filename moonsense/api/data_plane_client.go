@@ -25,6 +25,7 @@ import (
 	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
 	dataPlaneProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane"
 	dataPlaneSDKProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/data-plane-sdk"
+	journeyFeedbackProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/journeys"
 )
 
 const (
@@ -122,6 +123,27 @@ func (client *DataPlaneClient) DescribeJourney(journeyId string) (*dataPlaneProt
 	}
 
 	return &response, nil
+}
+
+func (client *DataPlaneClient) GetJourneyFeedback(journeyId string) (*journeyFeedbackProto.JourneyFeedback, *ApiErrorResponse) {
+	var response journeyFeedbackProto.JourneyFeedback
+
+	err := client.apiClient.Get(
+		NewDynamicPath(version+"/journeys/:journeyId/feedback", map[string]string{"journeyId": journeyId}),
+		&response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func (client *DataPlaneClient) AddJourneyFeedback(journeyId string, feedback *journeyFeedbackProto.JourneyFeedback) *ApiErrorResponse {
+	err := client.apiClient.Post(
+		NewDynamicPath(version+"/journeys/:journeyId/feedback", map[string]string{"journeyId": journeyId}),
+		feedback, nil)
+
+	return err
 }
 
 func (client *DataPlaneClient) ListSessions(listSessionConfig config.ListSessionConfig) (*dataPlaneProto.SessionListResponse, *ApiErrorResponse) {
