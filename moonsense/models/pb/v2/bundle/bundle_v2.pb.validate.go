@@ -960,6 +960,69 @@ func (m *Bundle) validate(all bool) error {
 
 	}
 
+	for idx, item := range m.GetContextMenuEvents() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, BundleValidationError{
+						field:  fmt.Sprintf("ContextMenuEvents[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, BundleValidationError{
+						field:  fmt.Sprintf("ContextMenuEvents[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return BundleValidationError{
+					field:  fmt.Sprintf("ContextMenuEvents[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if all {
+		switch v := interface{}(m.GetFrameRateEvent()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, BundleValidationError{
+					field:  "FrameRateEvent",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, BundleValidationError{
+					field:  "FrameRateEvent",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetFrameRateEvent()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return BundleValidationError{
+				field:  "FrameRateEvent",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
 		return BundleMultiError(errors)
 	}
@@ -3930,3 +3993,240 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = FormSubmitEventValidationError{}
+
+// Validate checks the field values on ContextMenuEvent with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ContextMenuEvent) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ContextMenuEvent with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ContextMenuEventMultiError, or nil if none found.
+func (m *ContextMenuEvent) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ContextMenuEvent) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for DeterminedAt
+
+	// no validation rules for ContextMenuStatus
+
+	if all {
+		switch v := interface{}(m.GetTarget()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ContextMenuEventValidationError{
+					field:  "Target",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ContextMenuEventValidationError{
+					field:  "Target",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTarget()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ContextMenuEventValidationError{
+				field:  "Target",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ContextMenuEventMultiError(errors)
+	}
+
+	return nil
+}
+
+// ContextMenuEventMultiError is an error wrapping multiple validation errors
+// returned by ContextMenuEvent.ValidateAll() if the designated constraints
+// aren't met.
+type ContextMenuEventMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ContextMenuEventMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ContextMenuEventMultiError) AllErrors() []error { return m }
+
+// ContextMenuEventValidationError is the validation error returned by
+// ContextMenuEvent.Validate if the designated constraints aren't met.
+type ContextMenuEventValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ContextMenuEventValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ContextMenuEventValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ContextMenuEventValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ContextMenuEventValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ContextMenuEventValidationError) ErrorName() string { return "ContextMenuEventValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ContextMenuEventValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sContextMenuEvent.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ContextMenuEventValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ContextMenuEventValidationError{}
+
+// Validate checks the field values on FrameRateEvent with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *FrameRateEvent) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FrameRateEvent with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in FrameRateEventMultiError,
+// or nil if none found.
+func (m *FrameRateEvent) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FrameRateEvent) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for DeterminedAt
+
+	// no validation rules for FramesPerSecond
+
+	if len(errors) > 0 {
+		return FrameRateEventMultiError(errors)
+	}
+
+	return nil
+}
+
+// FrameRateEventMultiError is an error wrapping multiple validation errors
+// returned by FrameRateEvent.ValidateAll() if the designated constraints
+// aren't met.
+type FrameRateEventMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FrameRateEventMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FrameRateEventMultiError) AllErrors() []error { return m }
+
+// FrameRateEventValidationError is the validation error returned by
+// FrameRateEvent.Validate if the designated constraints aren't met.
+type FrameRateEventValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FrameRateEventValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FrameRateEventValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FrameRateEventValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FrameRateEventValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FrameRateEventValidationError) ErrorName() string { return "FrameRateEventValidationError" }
+
+// Error satisfies the builtin error interface
+func (e FrameRateEventValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFrameRateEvent.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FrameRateEventValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FrameRateEventValidationError{}

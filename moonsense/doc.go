@@ -60,7 +60,7 @@
 //	            fmt.Printf("SessionId: %s, %s - %s\n", session.SessionId, session.Metadata.Platform.String(), session.CreatedAt.AsTime())
 //	        }
 //
-//	        if paginatedSession.HasMoreSessions() {
+//	        if paginatedSession.HasMore() {
 //	            paginatedSession, err = paginatedSession.NextPage()
 //	        } else {
 //	            break

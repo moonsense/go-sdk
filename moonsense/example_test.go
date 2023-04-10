@@ -44,6 +44,70 @@ func Example_listRegions() {
 	fmt.Println(regions)
 }
 
+func Example_listJourneys() {
+	// Create an SDKConfig with your secret token
+	sdkConfig := config.SDKConfig{
+		SecretToken: "<YOUR SECRET_TOKEN>",
+	}
+
+	// Create a Moonsense Client with the SDKConfig
+	client := moonsense.NewClient(sdkConfig)
+
+	// Configure the journey list criteria.
+	//
+	// For this example, we want to retrieve 50 journeys per page that were created either with the
+	// Android or iOS SDKs and were created during the month of January, 2023.
+	journeyListConfig := config.ListJourneyConfig{
+		JourneysPerPage: 50,
+		Platforms:       []commonProto.DevicePlatform{commonProto.DevicePlatform_ANDROID, commonProto.DevicePlatform_iOS},
+		Since:           time.Date(2023, time.January, 1, 0, 0, 0, 0, time.Local),
+		Until:           time.Date(2023, time.January, 31, 23, 59, 59, 999, time.Local),
+	}
+
+	// Fetch the first page of journeys with the specified configuration.
+	paginatedJourneys, err := client.ListJourneys(journeyListConfig)
+	for {
+		if err != nil {
+			fmt.Println("Error fetching journey list")
+			fmt.Println(err)
+			break
+		}
+
+		// Iterate over the returned journeys, printing out the journey information
+		for _, journey := range paginatedJourneys.Journeys {
+			fmt.Println(journey)
+		}
+
+		// After iterating across the first page of journeys, check to see if there are more available for this
+		// criteria, and if so, fetch the next page of journeys.
+		if paginatedJourneys.HasMore() {
+			paginatedJourneys, err = paginatedJourneys.NextPage()
+		} else {
+			break
+		}
+	}
+}
+
+func Example_describeJourney() {
+	// Create an SDKConfig with your secret token
+	sdkConfig := config.SDKConfig{
+		SecretToken: "<YOUR SECRET_TOKEN>",
+	}
+
+	// Create a Moonsense Client with the SDKConfig
+	client := moonsense.NewClient(sdkConfig)
+
+	// Fetch the journey information for the specified journeyID
+	journey, err := client.DescribeJourney("journeyID")
+	if err != nil {
+		fmt.Println("Error fetching journey")
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(journey)
+}
+
 func Example_listSessions() {
 	// Create an SDKConfig with your secret token
 	sdkConfig := config.SDKConfig{
@@ -81,7 +145,7 @@ func Example_listSessions() {
 
 		// After iterating across the first page of sessions, check to see if there are more available for this
 		// criteria, and if so, fetch the next page of sessions.
-		if paginatedSessions.HasMoreSessions() {
+		if paginatedSessions.HasMore() {
 			paginatedSessions, err = paginatedSessions.NextPage()
 		} else {
 			break

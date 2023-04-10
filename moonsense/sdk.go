@@ -49,6 +49,14 @@ type Client interface {
 	// See: https://api.moonsense.cloud/v2/regions
 	ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *api.ApiErrorResponse)
 
+	// ListJourneys lists the journeys for the current project.
+	ListJourneys(listJourneyConfig config.ListJourneyConfig) (*models.PaginatedJourneyList, *api.ApiErrorResponse)
+
+	// DescribeJourney returns the details of a journey with the specified journeyId. The journey
+	// response includes the list of sessions associated with the journey.
+	// only total values are returned for counters.
+	DescribeJourney(journeyId string) (*dataPlaneProto.JourneyDetailResponse, *api.ApiErrorResponse)
+
 	// ListSessions lists the sessions for the current project
 	ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSessionList, *api.ApiErrorResponse)
 
@@ -58,7 +66,7 @@ type Client interface {
 
 	// ListSessionFeatures returns the features for the specified sessionId. If region is not provided, the
 	// appropriate region will be looked up by calling DescribeSession first.
-	ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *api.ApiErrorResponse)
+	ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.SessionFeaturesResponse, *api.ApiErrorResponse)
 
 	// ListSessionSignals returns the signals for the specified sessionId. If region is not provided, the
 	// appropriate region will be looked up by calling DescribeSession first.
@@ -108,6 +116,21 @@ func (client *clientImpl) ListRegions() ([]*controlPlaneProto.DataPlaneRegion, *
 	return client.controlPlaneClient.ListRegions()
 }
 
+func (client *clientImpl) ListJourneys(listJourneyConfig config.ListJourneyConfig) (*models.PaginatedJourneyList, *api.ApiErrorResponse) {
+	journeyList, err := client.dataPlaneClient.ListJourneys(listJourneyConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	paginatedJourneyList := models.NewPaginatedJourneyList(journeyList, listJourneyConfig, client.dataPlaneClient)
+
+	return &paginatedJourneyList, nil
+}
+
+func (client *clientImpl) DescribeJourney(journeyId string) (*dataPlaneProto.JourneyDetailResponse, *api.ApiErrorResponse) {
+	return client.dataPlaneClient.DescribeJourney(journeyId)
+}
+
 func (client *clientImpl) ListSessions(listSessionConfig config.ListSessionConfig) (*models.PaginatedSessionList, *api.ApiErrorResponse) {
 	sessionList, err := client.dataPlaneClient.ListSessions(listSessionConfig)
 	if err != nil {
@@ -123,7 +146,7 @@ func (client *clientImpl) DescribeSession(sessionId string, minimal bool) (*data
 	return client.dataPlaneClient.DescribeSession(sessionId, minimal)
 }
 
-func (client *clientImpl) ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.FeatureListResponse, *api.ApiErrorResponse) {
+func (client *clientImpl) ListSessionFeatures(sessionId string, region *string) (*dataPlaneProto.SessionFeaturesResponse, *api.ApiErrorResponse) {
 	return client.dataPlaneClient.ListSessionFeatures(sessionId, region)
 }
 
