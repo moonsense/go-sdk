@@ -58,8 +58,7 @@ func (ps *PaginatedJourneyList) HasMore() bool {
 // Fetches the next page of journeys.
 func (ps *PaginatedJourneyList) NextPage() (*PaginatedJourneyList, *api.ApiErrorResponse) {
 	if !ps.HasMore() {
-		empty := PaginatedJourneyList{}
-		return &empty, nil
+		return nil, nil
 	}
 
 	// Calculate the next page config based on the incoming journey list and such...

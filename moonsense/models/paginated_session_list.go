@@ -59,8 +59,7 @@ func (ps *PaginatedSessionList) HasMore() bool {
 // Fetches the next page of sessions.
 func (ps *PaginatedSessionList) NextPage() (*PaginatedSessionList, *api.ApiErrorResponse) {
 	if !ps.HasMore() {
-		empty := PaginatedSessionList{}
-		return &empty, nil
+		return nil, nil
 	}
 
 	// Calculate the next page config based on the incoming session list and such...
