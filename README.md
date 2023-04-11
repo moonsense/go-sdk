@@ -59,8 +59,44 @@ func main() {
             break
         }
     }
+
+    // Fetch features for a specific session. Specifying the 
+    // region the session is in will result in a faster lookup
+    features, err := client.ListSessionFeatures("<session-id>", "asia-south1.gcp")
+	if err != nil {
+		fmt.Println("Error fetching session features")
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(features)
+
+    // Fetch signals for a specific session. Specifying the 
+    // region the session is in will result in a faster lookup
+    signals, err := client.ListSessionSignals("<session-id>", "asia-south1.gcp")
+	if err != nil {
+		fmt.Println("Error fetching session signals")
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(signals)
 }
 ```
+
+### Add Journey Feedback
+
+ Adding feedback to journeys provides a mechanism for tracking some special details against a given journey. For example, if a journey is determined to contain fraud, the journey can be flagged as fraudulent using Journey Feedback.
+
+ ```go
+	err := client.AddJourneyFeedback(journeyId, &journeysProto.JourneyFeedback{
+		FraudFeedback: &journeysProto.FraudFeedback{
+			IsFraud:     true,
+			ReportedAt:  timestamppb.Now(),
+			FraudReason: "It was fraud because...",
+		},
+	})
+ ```
 
 See [example_test.go](https://github.com/moonsense/go-sdk/blob/main/moonsense/example_test.go) for further examples.
 

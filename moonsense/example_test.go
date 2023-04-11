@@ -20,8 +20,10 @@ import (
 
 	"github.com/moonsense/go-sdk/moonsense"
 	"github.com/moonsense/go-sdk/moonsense/config"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	commonProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/common"
+	journeysProto "github.com/moonsense/go-sdk/moonsense/models/pb/v2/journeys"
 )
 
 func Example_listRegions() {
@@ -108,6 +110,49 @@ func Example_describeJourney() {
 	fmt.Println(journey)
 }
 
+func Example_getJourneyFeedback() {
+	// Create an SDKConfig with your secret token
+	sdkConfig := config.SDKConfig{
+		SecretToken: "<YOUR SECRET_TOKEN>",
+	}
+
+	// Create a Moonsense Client with the SDKConfig
+	client := moonsense.NewClient(sdkConfig)
+
+	// Fetch the journey information for the specified journeyID
+	feedback, err := client.GetJourneyFeedback("journeyID")
+	if err != nil {
+		fmt.Println("Error fetching journey feedback")
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(feedback)
+}
+
+func Example_addJourneyFeedback() {
+	// Create an SDKConfig with your secret token
+	sdkConfig := config.SDKConfig{
+		SecretToken: "<YOUR SECRET_TOKEN>",
+	}
+
+	// Create a Moonsense Client with the SDKConfig
+	client := moonsense.NewClient(sdkConfig)
+
+	err := client.AddJourneyFeedback("journeyId", &journeysProto.JourneyFeedback{
+		FraudFeedback: &journeysProto.FraudFeedback{
+			IsFraud:     true,
+			ReportedAt:  timestamppb.Now(),
+			FraudReason: "It was fraud because...",
+		},
+	})
+
+	if err != nil {
+		fmt.Println("Error adding journey feedback")
+		fmt.Println(err)
+		return
+	}
+}
 func Example_listSessions() {
 	// Create an SDKConfig with your secret token
 	sdkConfig := config.SDKConfig{
